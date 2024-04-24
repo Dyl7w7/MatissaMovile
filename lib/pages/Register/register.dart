@@ -18,6 +18,8 @@ class _RegisterPageState extends State<RegisterPage> {
   List<String> list = <String>["Medellín"];
   String _ciudad = "Medellín";
 
+  bool _isRegistering = false;
+
   final TextEditingController _cedula = TextEditingController();
   final TextEditingController _nombre = TextEditingController();
   final TextEditingController _apellido = TextEditingController();
@@ -80,6 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               style: TextStyle(
                                 fontFamily: GoogleFonts.quicksand().fontFamily,
                               ),
+                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                   hintText: 'Cédula',
                                   hintStyle: TextStyle(
@@ -113,7 +116,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               style: TextStyle(
                                 fontFamily: GoogleFonts.quicksand().fontFamily,
                               ),
-                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                   hintText: 'Nombres',
                                   hintStyle: TextStyle(
@@ -379,75 +381,89 @@ class _RegisterPageState extends State<RegisterPage> {
                               width: 200,
                               height: 45,
                               child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      String nombre = _nombre.text;
-                                      String apellido = _apellido.text;
-                                      String direccion = _direccion.text;
-                                      String ciudad = _ciudad;
-                                      String telefono = _telefono.text;
-                                      String correo = _correo.text;
-                                      String password = _password;
-                                      bool register = await postData(
-                                          nombre,
-                                          apellido,
-                                          direccion,
-                                          ciudad,
-                                          correo,
-                                          telefono,
-                                          password);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            Icon(
-                                              register
-                                                  ? Icons.check_circle
-                                                  : Icons.error,
-                                              color:
-                                                  Color.fromARGB(255, 6, 6, 6),
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              register
-                                                  ? "Se ha registrado correctamente"
-                                                  : "Error: el correo o el teléfono \n ya estan registrados",
-                                              style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                  fontFamily:
-                                                      'Quicksand-SemiBold'),
-                                            )
-                                          ],
-                                        ),
-                                        duration:
-                                            const Duration(milliseconds: 2000),
-                                        width: 300,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 10),
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(3.0),
-                                        ),
-                                        backgroundColor: register
-                                            ? const Color.fromARGB(
-                                                255, 12, 195, 106)
-                                            : Colors.red,
-                                      ));
-                                      if (register) {
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const MyLogin()));
-                                      }
-                                    }
-                                  },
+                                  onPressed: _isRegistering
+                                      ? null
+                                      : () async {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            setState(() {
+                                              _isRegistering =
+                                                  true; // Indica que se está realizando el registro
+                                            });
+                                            String nombre = _nombre.text;
+                                            String apellido = _apellido.text;
+                                            String direccion = _direccion.text;
+                                            String ciudad = _ciudad;
+                                            String telefono = _telefono.text;
+                                            String correo = _correo.text;
+                                            String password = _password;
+                                            bool register = await postData(
+                                                nombre,
+                                                apellido,
+                                                direccion,
+                                                ciudad,
+                                                correo,
+                                                telefono,
+                                                password);
+                                            setState(() {
+                                              _isRegistering =
+                                                  false; // Finaliza el registro, el botón vuelve a estar habilitado
+                                            });
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                              content: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Icon(
+                                                    register
+                                                        ? Icons.check_circle
+                                                        : Icons.error,
+                                                    color: Color.fromARGB(
+                                                        255, 6, 6, 6),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    register
+                                                        ? "Se ha registrado correctamente"
+                                                        : "Error: el correo o el teléfono \n ya estan registrados",
+                                                    style: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 255, 255, 255),
+                                                        fontFamily:
+                                                            'Quicksand-SemiBold'),
+                                                  )
+                                                ],
+                                              ),
+                                              duration: const Duration(
+                                                  milliseconds: 2000),
+                                              width: 300,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 10),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(3.0),
+                                              ),
+                                              backgroundColor: register
+                                                  ? const Color.fromARGB(
+                                                      255, 12, 195, 106)
+                                                  : Colors.red,
+                                            ));
+                                            if (register) {
+                                              Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const MyLogin()));
+                                            }
+                                          }
+                                        },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 10,
                                     backgroundColor: const Color.fromRGBO(

@@ -11,13 +11,19 @@ class PagePedidos extends StatefulWidget {
   final String clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
-  const PagePedidos({super.key, required this.clienteId, required this.clienteCorreo, required this.clienteContrasena});
+  const PagePedidos(
+      {super.key,
+      required this.clienteId,
+      required this.clienteCorreo,
+      required this.clienteContrasena});
 
   @override
   State<PagePedidos> createState() => _PagePedidosState();
 }
 
 class _PagePedidosState extends State<PagePedidos> {
+  bool _isDeleting = false;
+  bool _isCreating = false;
   List<Map<String, dynamic>> productos = [];
   List<Map<String, dynamic>> pedidos = [];
   String selectedProduct = "";
@@ -25,7 +31,7 @@ class _PagePedidosState extends State<PagePedidos> {
   double precioProducto = 0.0;
   double costoTotal = 0.0;
 
-   String fecha() {
+  String fecha() {
     DateTime now = DateTime.now();
     int year = now.year;
     int month = now.month;
@@ -38,6 +44,7 @@ class _PagePedidosState extends State<PagePedidos> {
 
   @override
   void initState() {
+    _isCreating = false;
     super.initState();
     fetchPedidos();
     fetchProductos();
@@ -46,35 +53,46 @@ class _PagePedidosState extends State<PagePedidos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(),
-      drawer: MyDrawer(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,),
+      drawer: MyDrawer(
+        clienteId: widget.clienteId,
+        clienteCorreo: widget.clienteCorreo,
+        clienteContrasena: widget.clienteContrasena,
+      ),
       body: Column(
         children: [
-           Text("Mis pedidos", style: TextStyle(fontFamily: GoogleFonts.quicksand().fontFamily, fontSize: 35, fontWeight: FontWeight.bold),),
+          Text(
+            "Mis pedidos",
+            style: TextStyle(
+                fontFamily: GoogleFonts.quicksand().fontFamily,
+                fontSize: 35,
+                fontWeight: FontWeight.bold),
+          ),
           Expanded(
-            child: ListView.builder(
-              itemCount: pedidos.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: ExpansionTileCard(
-                    initialElevation: 2,
-                    expandedColor: const Color.fromARGB(255, 216, 216, 216),
-                    baseColor: const Color.fromRGBO(226, 212, 255, 1),
-                    title: Text("Producto: ${pedidos[index]['producto']}"),
-                    subtitle: Text("Fecha registro: ${pedidos[index]['fechaPedido']}"),
-                    leading: const Icon(Icons.shopping_cart),
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    children: <Widget>[
-                      const Divider(
-                        thickness: 1.0,
-                        height: 1.0,
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
+              child: ListView.builder(
+            itemCount: pedidos.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ExpansionTileCard(
+                  initialElevation: 2,
+                  expandedColor: const Color.fromARGB(255, 216, 216, 216),
+                  baseColor: const Color.fromRGBO(226, 212, 255, 1),
+                  title: Text("Producto: ${pedidos[index]['producto']}"),
+                  subtitle:
+                      Text("Fecha registro: ${pedidos[index]['fechaPedido']}"),
+                  leading: const Icon(Icons.shopping_cart),
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  children: <Widget>[
+                    const Divider(
+                      thickness: 1.0,
+                      height: 1.0,
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
                             ListTile(
                               title: const Text('Estado'),
                               subtitle: pedidos[index]['estado'] == 1
@@ -86,23 +104,26 @@ class _PagePedidosState extends State<PagePedidos> {
                             ),
                             ListTile(
                               title: const Text('Precio de producto'),
-                              subtitle: Text('${pedidos[index]['precioUnitario']}'),
+                              subtitle:
+                                  Text('${pedidos[index]['precioUnitario']}'),
                               trailing: const Icon(Icons.monetization_on),
                             ),
                             ListTile(
                               title: const Text('cantidad'),
-                              subtitle:Text('${pedidos[index]['cantidadProducto']}'),
+                              subtitle:
+                                  Text('${pedidos[index]['cantidadProducto']}'),
                               trailing: const Icon(Icons.inventory_2),
                             ),
                             ListTile(
                               title: const Text('Costo total'),
-                              subtitle:Text('${pedidos[index]['precioTotalPedido']}'),
+                              subtitle: Text(
+                                  '${pedidos[index]['precioTotalPedido']}'),
                               trailing: const Icon(Icons.monetization_on),
                             )
-                            ],
-                          ),
+                          ],
                         ),
                       ),
+                    ),
                     Container(
                       decoration: const BoxDecoration(
                           borderRadius: BorderRadius.only(
@@ -115,149 +136,184 @@ class _PagePedidosState extends State<PagePedidos> {
                         buttonMinWidth: 90.0,
                         children: [
                           TextButton(
-                            onPressed: () async {
-                              _showEditarModal(context, pedidos[index]);
-                            }, 
-                            child: const  Column(
-                              children: [
-                                Icon(Icons.edit, color: Colors.black54,),
-                                Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
-                                Text("Editar", style: TextStyle(color: Colors.black54))
-                              ],
-                            )
-                          ),
+                              onPressed: () async {
+                                _showEditarModal(context, pedidos[index]);
+                              },
+                              child: const Column(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: Colors.black54,
+                                  ),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 2.0)),
+                                  Text("Editar",
+                                      style: TextStyle(color: Colors.black54))
+                                ],
+                              )),
                           TextButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                        title: const Text("Alerta!"),
-                                        content: const Text("¿Seguro quieres eliminar la cita?"),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () async {
-                                                await deleteData(pedidos[index]['_id']);
-                                                await fetchPedidos();
-                                                Navigator.of(context).pop();
-                                                _showExitoDialog(context, "Pedido eliminado");
-                                              },
-                                              child: const Text("Aceptar")),
-                                          TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context).pop(),
-                                              child: const Text("Cancelar"))
-                                        ]);
-                                  });
-                            },
-                            child: const Column(
-                              children: [
-                                Icon(
-                                  Icons.delete,
-                                  color: Colors.black54,
-                                ),
-                                Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
-                                Text("Eliminar",
-                                    style: TextStyle(color: Colors.black54))
-                              ],
-                            )
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              if(pedidos[index]['estado'] == 1){
+                              onPressed: () {
                                 showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text("Alerta!"),
-                                      content: const Text(
-                                          "¿Seguro quieres cancelar el pedido?"),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () async {
-                                              await cambiarEstado(
-                                                  pedidos[index]['_id']);
-                                              Navigator.of(context).pop();
-                                              _showExitoDialog(context, "Pedido cancelado");
-                                            },
-                                            child: const Text("Aceptar")),
-                                        TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context)
-                                                    .pop(),
-                                            child: const Text("Cancelar"))
-                                      ]
-                                    );
-                                  }
-                                );
-                              }else{
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.cancel,
-                                            color: Color.fromARGB(
-                                                255, 255, 255, 255),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            "El pedido ya esta cancelado",
-                                            style: TextStyle(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                          title: const Text("Alerta!"),
+                                          content: const Text(
+                                              "¿Seguro quieres eliminar la cita?"),
+                                          actions: [
+                                            TextButton(
+                                                onPressed: _isDeleting
+                                                    ? null
+                                                    : () async {
+                                                        setState(() {
+                                                          _isDeleting = true;
+                                                        });
+                                                        bool success = false;
+                                                        try {
+                                                          await deleteData(
+                                                              pedidos[index]
+                                                                  ['_id']);
+                                                          await fetchPedidos();
+                                                          success = true;
+                                                        } catch (e) {
+                                                          // Manejar errores aquí
+                                                          print(
+                                                              'Error al eliminar pedido: $e');
+                                                        }
+
+                                                        setState(() {
+                                                          _isDeleting = false;
+                                                        });
+
+                                                        if (success) {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          _showExitoDialog(
+                                                              context,
+                                                              "Pedido eliminado");
+                                                        } else {
+                                                          // Mostrar mensaje de error si es necesario
+                                                        }
+                                                      },
+                                                child: const Text("Aceptar")),
+                                            TextButton(
+                                                onPressed: _isDeleting
+                                                    ? null
+                                                    : () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
+                                                child: const Text("Cancelar"))
+                                          ]);
+                                    });
+                              },
+                              child: const Column(
+                                children: [
+                                  Icon(
+                                    Icons.delete,
+                                    color: Colors.black54,
+                                  ),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 2.0)),
+                                  Text("Eliminar",
+                                      style: TextStyle(color: Colors.black54))
+                                ],
+                              )),
+                          TextButton(
+                              onPressed: () {
+                                if (pedidos[index]['estado'] == 1) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                            title: const Text("Alerta!"),
+                                            content: const Text(
+                                                "¿Seguro quieres cancelar el pedido?"),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () async {
+                                                    await cambiarEstado(
+                                                        pedidos[index]['_id']);
+                                                    Navigator.of(context).pop();
+                                                    _showExitoDialog(context,
+                                                        "Pedido cancelado");
+                                                  },
+                                                  child: const Text("Aceptar")),
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(),
+                                                  child: const Text("Cancelar"))
+                                            ]);
+                                      });
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.cancel,
                                                 color: Color.fromARGB(
                                                     255, 255, 255, 255),
-                                                fontFamily:
-                                                    'Quicksand-SemiBold'),
-                                          )
-                                        ],
-                                      ),
-                                      duration: const Duration(
-                                          milliseconds: 2000),
-                                      width: 300,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0, vertical: 10),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(3.0),
-                                      ),
-                                      backgroundColor: Colors.red
-                                  )
-                                );
-                              }
-                            },
-                            child: const Column(
-                              children: [
-                                Icon(
-                                  Icons.block,
-                                  color: Colors.black54,
-                                ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 2.0)),
-                                Text("Cancelar",
-                                    style: TextStyle(color: Colors.black54))
-                              ],
-                            )
-                          ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                "El pedido ya esta cancelado",
+                                                style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 255, 255, 255),
+                                                    fontFamily:
+                                                        'Quicksand-SemiBold'),
+                                              )
+                                            ],
+                                          ),
+                                          duration: const Duration(
+                                              milliseconds: 2000),
+                                          width: 300,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0, vertical: 10),
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(3.0),
+                                          ),
+                                          backgroundColor: Colors.red));
+                                }
+                              },
+                              child: const Column(
+                                children: [
+                                  Icon(
+                                    Icons.block,
+                                    color: Colors.black54,
+                                  ),
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 2.0)),
+                                  Text("Cancelar",
+                                      style: TextStyle(color: Colors.black54))
+                                ],
+                              )),
                         ],
                       ),
                     )
-                    ],
-                  ),
-                );
-              },
-            ) 
-          )
+                  ],
+                ),
+              );
+            },
+          ))
         ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
+          setState(() {
+            _isCreating = false;
+          });
           _showModal(context);
         },
       ),
@@ -274,12 +330,16 @@ class _PagePedidosState extends State<PagePedidos> {
             return Container(
               padding: EdgeInsets.all(16),
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 44, 44, 44),
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
-              ),
+                  color: Color.fromARGB(255, 44, 44, 44),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
               child: Column(
                 children: [
-                  const Text("Producto",style: TextStyle(color: Colors.white ),),
+                  const Text(
+                    "Producto",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     height: 35,
@@ -319,24 +379,31 @@ class _PagePedidosState extends State<PagePedidos> {
                       isExpanded: true,
                     ),
                   ),
-                  const Text("Precio",style: TextStyle(color: Colors.white ),),
-                  Label(screenWidth: screenWidth, dato: '\$${precioProducto.toStringAsFixed(2)}'),
-                  const Text("Cantidad",style: TextStyle(color: Colors.white ),),
+                  const Text(
+                    "Precio",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Label(
+                      screenWidth: screenWidth,
+                      dato: '\$${precioProducto.toStringAsFixed(2)}'),
+                  const Text(
+                    "Cantidad",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     width: screenWidth,
                     height: 35,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(35.0),
-                      color: Colors.white, // Puedes personalizar el color y el grosor del borde
+                      color: Colors
+                          .white, // Puedes personalizar el color y el grosor del borde
                     ),
                     child: TextField(
                       keyboardType: TextInputType.number,
                       textAlignVertical: TextAlignVertical.center,
                       textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        border: InputBorder.none
-                        ),
+                      decoration: InputDecoration(border: InputBorder.none),
                       onChanged: (value) {
                         setState(() {
                           cantidadProducto = int.tryParse(value) ?? 1;
@@ -345,36 +412,65 @@ class _PagePedidosState extends State<PagePedidos> {
                       },
                     ),
                   ),
-                  const Text("Costo total",style: TextStyle(color: Colors.white ),),
-                  Label(screenWidth: screenWidth, dato: '\$${costoTotal.toStringAsFixed(2)}'),
-                  SizedBox(height: 20,),
+                  const Text(
+                    "Costo total",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Label(
+                      screenWidth: screenWidth,
+                      dato: '\$${costoTotal.toStringAsFixed(2)}'),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text("Cancelar")),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await _enviarPedido(null);
-                              await fetchPedidos();
-                              Navigator.of(context).pop();
-                              _showExitoDialog(context, "Pedido hecho");
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
                             },
-                            child: Text('Pedir'),
-                          ),
+                            child: Text("Cancelar")),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: ElevatedButton(
+                          onPressed: _isCreating
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    _isCreating = true;
+                                  });
+
+                                  bool success = false;
+                                  try {
+                                    await _enviarPedido(null);
+                                    await fetchPedidos();
+                                    success = true;
+                                  } catch (e) {
+                                    // Manejar errores aquí
+                                    print('Error al enviar pedido: $e');
+                                  }
+
+                                  setState(() {
+                                    _isCreating = false;
+                                  });
+
+                                  if (success) {
+                                    print(_isCreating);
+                                    Navigator.of(context).pop();
+                                    _showExitoDialog(context, "Pedido hecho");
+                                  } else {
+                                    // Mostrar mensaje de error si es necesario
+                                  }
+                                },
+                          child: Text('Pedir'),
                         ),
-                      ],
-                    )
-                  )
+                      ),
+                    ],
+                  ))
                 ],
               ),
             );
@@ -388,18 +484,22 @@ class _PagePedidosState extends State<PagePedidos> {
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
-              return StatefulBuilder(
+        return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             double screenWidth = MediaQuery.of(context).size.width;
             return Container(
               padding: EdgeInsets.all(16),
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 44, 44, 44),
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
-              ),
+                  color: Color.fromARGB(255, 44, 44, 44),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
               child: Column(
                 children: [
-                  const Text("Producto",style: TextStyle(color: Colors.white ),),
+                  const Text(
+                    "Producto",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     height: 35,
@@ -439,24 +539,31 @@ class _PagePedidosState extends State<PagePedidos> {
                       isExpanded: true,
                     ),
                   ),
-                  const Text("Precio",style: TextStyle(color: Colors.white ),),
-                  Label(screenWidth: screenWidth, dato: '\$${precioProducto.toStringAsFixed(2)}'),
-                  const Text("Cantidad",style: TextStyle(color: Colors.white ),),
+                  const Text(
+                    "Precio",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Label(
+                      screenWidth: screenWidth,
+                      dato: '\$${precioProducto.toStringAsFixed(2)}'),
+                  const Text(
+                    "Cantidad",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     width: screenWidth,
                     height: 35,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(35.0),
-                      color: Colors.white, // Puedes personalizar el color y el grosor del borde
+                      color: Colors
+                          .white, // Puedes personalizar el color y el grosor del borde
                     ),
                     child: TextField(
                       keyboardType: TextInputType.number,
                       textAlignVertical: TextAlignVertical.center,
                       textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        border: InputBorder.none
-                        ),
+                      decoration: InputDecoration(border: InputBorder.none),
                       onChanged: (value) {
                         setState(() {
                           cantidadProducto = int.tryParse(value) ?? 1;
@@ -465,36 +572,42 @@ class _PagePedidosState extends State<PagePedidos> {
                       },
                     ),
                   ),
-                  const Text("Costo total",style: TextStyle(color: Colors.white ),),
-                  Label(screenWidth: screenWidth, dato: '\$${costoTotal.toStringAsFixed(2)}'),
-                  SizedBox(height: 20,),
+                  const Text(
+                    "Costo total",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Label(
+                      screenWidth: screenWidth,
+                      dato: '\$${costoTotal.toStringAsFixed(2)}'),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text("Cancelar")),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await _enviarPedido(pedido);
-                              await fetchPedidos();
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: ElevatedButton(
+                            onPressed: () {
                               Navigator.pop(context);
-                              _showExitoDialog(context, "Pedido editado");
                             },
-                            child: Text('Editar'),
-                          ),
+                            child: Text("Cancelar")),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await _enviarPedido(pedido);
+                            await fetchPedidos();
+                            Navigator.pop(context);
+                            _showExitoDialog(context, "Pedido editado");
+                          },
+                          child: Text('Editar'),
                         ),
-                      ],
-                    )
-                  )
+                      ),
+                    ],
+                  ))
                 ],
               ),
             );
@@ -504,26 +617,23 @@ class _PagePedidosState extends State<PagePedidos> {
     );
   }
 
-
   void _actualizarCostoTotal() {
     costoTotal = cantidadProducto * precioProducto;
   }
 
   Future<void> cambiarEstado(String id) async {
     final url = Uri.parse('https://matissa.onrender.com/api/pedidos/$id');
-    final response = await http.put(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({'estado': 0})
-    );
+    final response = await http.put(url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({'estado': 0}));
 
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       print('Estado actualizado: ${response.body}');
       fetchPedidos();
     }
   }
 
-Future<void> _enviarPedido(Map<String, dynamic>? pedido) async {
+  Future<void> _enviarPedido(Map<String, dynamic>? pedido) async {
     final url = pedido != null && pedido.containsKey('_id')
         ? Uri.parse("https://matissa.onrender.com/api/pedidos/${pedido['_id']}")
         : Uri.parse("https://matissa.onrender.com/api/pedidos");
@@ -567,9 +677,7 @@ Future<void> _enviarPedido(Map<String, dynamic>? pedido) async {
     }
   }
 
-
-
-    Future<void> fetchPedidos() async {
+  Future<void> fetchPedidos() async {
     final response =
         await http.get(Uri.parse('https://matissa.onrender.com/api/pedidos'));
 
@@ -602,7 +710,7 @@ Future<void> _enviarPedido(Map<String, dynamic>? pedido) async {
     }
   }
 
-    Future<void> fetchProductos() async {
+  Future<void> fetchProductos() async {
     final response =
         await http.get(Uri.parse('https://matissa.onrender.com/api/productos'));
 
@@ -628,9 +736,12 @@ Future<void> _enviarPedido(Map<String, dynamic>? pedido) async {
     }
   }
 
-    Future<void> deleteData(String idPedido) async {
-    final response = await http
-        .delete(Uri.parse('https://matissa.onrender.com/api/pedidos/$idPedido'));
+  Future<void> deleteData(String idPedido) async {
+    setState(() {
+      _isDeleting = false;
+    });
+    final response = await http.delete(
+        Uri.parse('https://matissa.onrender.com/api/pedidos/$idPedido'));
 
     if (response.statusCode == 200) {
       // La respuesta fue exitosa
