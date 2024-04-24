@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -16,26 +17,38 @@ class _MyLoginState extends State<MyLogin> {
   late TextEditingController _correoController = TextEditingController();
   late TextEditingController _passwordController = TextEditingController();
 
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String? _validateUserName(String? value){
-    if(value == null || value.isEmpty){
+  String? _validateUserName(String? value) {
+    print("entre a la función");
+    if (value == null || value.isEmpty) {
       return "Por favor, ingrese un correo";
     }
     return null;
   }
 
-  String? _validatePassword(String? value){
-    if(value == null || value.isEmpty){
+  String? _validatePassword(String? value) {
+    print("entre a la función");
+    if (value == null || value.isEmpty) {
       return "Por favor ingrese una contraseña";
     }
     return null;
   }
 
-    Future<void> _login(BuildContext context) async {
+  String encryptPassword(String password) {
+    var bytes = utf8.encode(password); // Convierte la cadena a bytes en UTF-8
+    var digest = sha256.convert(bytes); // Realiza el hash SHA-256
+
+    return digest.toString();
+  }
+
+  Future<void> _login(BuildContext context) async {
     final correo = _correoController.text;
     final password = _passwordController.text;
+
+    if (correo == "" || password == "") {
+      _showErrorDialog(context, 'Por favor, rellene los campos');
+    }
 
     print("entre a la función");
 
@@ -51,7 +64,10 @@ class _MyLoginState extends State<MyLogin> {
         final String storedPassword = userData['contraseña'];
         final String clienteId = userData['_id'];
 
-        if (password == storedPassword) {
+        String encryptedPassword = encryptPassword(password);
+        print(encryptedPassword); // Imprime la contraseña encriptada
+
+        if (encryptedPassword == storedPassword) {
           // Puedes hacer lo que necesitas con el ID y otros datos
           // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
           print('Usuario ID: $clienteId');
@@ -59,7 +75,10 @@ class _MyLoginState extends State<MyLogin> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) => PageCitas(clienteId: "$clienteId", clienteCorreo: "$storedCorreo", clienteContrasena: "$storedPassword")),
+                builder: (context) => PageCitas(
+                    clienteId: "$clienteId",
+                    clienteCorreo: "$storedCorreo",
+                    clienteContrasena: "$storedPassword")),
           );
         } else {
           _showErrorDialog(context, 'Contraseña incorrecta');
@@ -78,7 +97,6 @@ class _MyLoginState extends State<MyLogin> {
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -91,7 +109,6 @@ class _MyLoginState extends State<MyLogin> {
           'Matissa',
           style: TextStyle(
             fontFamily: GoogleFonts.merienda().fontFamily,
-           
             color: Colors.white,
             fontSize: 30,
           ),
@@ -103,7 +120,7 @@ class _MyLoginState extends State<MyLogin> {
         child: ListView(
           children: [
             Column(
-              children: [ 
+              children: [
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 30.0),
                   height: 160.0,
@@ -115,7 +132,7 @@ class _MyLoginState extends State<MyLogin> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 100),
                   child: TextFormField(
-                    validator: (value) => _validateUserName(value),
+                    //validator: (value) => _validateUserName(value),
                     controller: _correoController,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
@@ -138,13 +155,19 @@ class _MyLoginState extends State<MyLogin> {
                         borderSide: BorderSide(color: Colors.white),
                       ),
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Por favor ingrese un correo';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 100),
                   child: TextFormField(
-                    validator: (value) => _validatePassword(value),
+                    //validator: (value) => _validatePassword(value),
                     controller: _passwordController,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
@@ -168,6 +191,13 @@ class _MyLoginState extends State<MyLogin> {
                         borderSide: BorderSide(color: Colors.white),
                       ),
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        print("Vacio pai");
+                        return 'Por favor ingrese una contraseña';
+                      }
+                      return null;
+                    },
                   ),
                 ),
 
@@ -190,7 +220,7 @@ class _MyLoginState extends State<MyLogin> {
                     'Ingresar',
                     style: TextStyle(
                       fontFamily: GoogleFonts.quicksand().fontFamily,
-                      fontSize: 18, 
+                      fontSize: 18,
                       color: const Color.fromARGB(255, 82, 81, 81),
                       fontWeight: FontWeight.w600,
                     ),
@@ -202,15 +232,15 @@ class _MyLoginState extends State<MyLogin> {
                     Navigator.pushNamed(
                         context, 'signup'); //El archivo donde se va enviar
                   },
-                  child:  Text(
+                  child: Text(
                     '¿No tienes cuenta?',
                     style: TextStyle(
                       fontFamily: GoogleFonts.quicksand().fontFamily,
-                      fontSize: 20, 
+                      fontSize: 20,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.underline,
-                      decorationColor: Colors.white, 
+                      decorationColor: Colors.white,
                     ),
                   ),
                 ),
@@ -228,9 +258,10 @@ class _MyLoginState extends State<MyLogin> {
                   ),
                   onPressed: () {
                     Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (context) => const RegisterPage(),)
-                    );
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterPage(),
+                        ));
                   },
                   child: Text(
                     'Registrate',
