@@ -3,13 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:matissamovile/pages/Citas/pageCitas.dart';
 import 'package:matissamovile/pages/Login/login.dart';
 import 'package:matissamovile/pages/Pedidos/pagePedidos.dart';
+import 'package:matissamovile/pages/Productos/pageProductos.dart';
 import 'package:matissamovile/pages/perfil/miperfil.dart';
 
 class MyDrawer extends StatefulWidget {
   final String clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
-  const MyDrawer({super.key, required this.clienteId, required this.clienteCorreo, required this.clienteContrasena});
+  const MyDrawer(
+      {super.key,
+      required this.clienteId,
+      required this.clienteCorreo,
+      required this.clienteContrasena});
 
   @override
   State<MyDrawer> createState() => _MyDrawerState();
@@ -86,11 +91,15 @@ class _MyDrawerState extends State<MyDrawer> {
                     selected: _selectedIndex == 0,
                     onTap: () {
                       _onItemTapped(0);
-                       Navigator.pushReplacement(
-                           context,
-                           MaterialPageRoute(
-                             builder: (context) => PerfilPage(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,),
-                           ));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PerfilPage(
+                              clienteId: widget.clienteId,
+                              clienteCorreo: widget.clienteCorreo,
+                              clienteContrasena: widget.clienteContrasena,
+                            ),
+                          ));
                     },
                   ),
                   ListTile(
@@ -113,7 +122,11 @@ class _MyDrawerState extends State<MyDrawer> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PageCitas(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,)));
+                              builder: (context) => PageCitas(
+                                    clienteId: widget.clienteId,
+                                    clienteCorreo: widget.clienteCorreo,
+                                    clienteContrasena: widget.clienteContrasena,
+                                  )));
                     },
                   ),
                   ListTile(
@@ -136,7 +149,11 @@ class _MyDrawerState extends State<MyDrawer> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PagePedidos(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,)));
+                              builder: (context) => PagePedidos(
+                                    clienteId: widget.clienteId,
+                                    clienteCorreo: widget.clienteCorreo,
+                                    clienteContrasena: widget.clienteContrasena,
+                                  )));
                     },
                   ),
                   ListTile(
@@ -155,11 +172,15 @@ class _MyDrawerState extends State<MyDrawer> {
                     ),
                     selected: _selectedIndex == 2,
                     onTap: () {
-                      _onItemTapped(2);
+                      _onItemTapped(3);
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PagePedidos(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,)));
+                              builder: (context) => PageProductos(
+                                    clienteId: widget.clienteId,
+                                    clienteCorreo: widget.clienteCorreo,
+                                    clienteContrasena: widget.clienteContrasena,
+                                  )));
                     },
                   ),
                 ],
@@ -184,9 +205,8 @@ class _MyDrawerState extends State<MyDrawer> {
                   color: Colors.white,
                 ),
                 onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyLogin()));
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => const MyLogin()));
                 },
               ),
             ),
