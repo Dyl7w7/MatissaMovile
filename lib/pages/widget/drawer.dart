@@ -139,6 +139,29 @@ class _MyDrawerState extends State<MyDrawer> {
                               builder: (context) => PagePedidos(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,)));
                     },
                   ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.badge,
+                      size: 30,
+                      color: Colors.black,
+                    ),
+                    title: Text(
+                      'Productos',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontFamily: GoogleFonts.quicksand().fontFamily,
+                      ),
+                    ),
+                    selected: _selectedIndex == 2,
+                    onTap: () {
+                      _onItemTapped(2);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PagePedidos(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,)));
+                    },
+                  ),
                 ],
               ),
             ),
