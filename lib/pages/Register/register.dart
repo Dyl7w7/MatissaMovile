@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:matissamovile/pages/Login/login.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
+import 'package:intl/intl.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,8 +16,10 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  List<String> list = <String>["Medellín"];
-  String _ciudad = "Medellín";
+  // List<String> list = <String>["Medellín"];
+  // String _ciudad = "Medellín";
+  late DateTime _selectDate;
+  
 
   bool _isRegistering = false;
 
@@ -26,7 +29,20 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _correo = TextEditingController();
   final TextEditingController _telefono = TextEditingController();
   final TextEditingController _direccion = TextEditingController();
+  late TextEditingController _nacimiento;
   String _password = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _nacimiento = TextEditingController();
+    _selectDate = DateTime.now();
+  }
+  @override
+    void dispose() {
+    _nacimiento.dispose();
+    super.dispose();
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -271,7 +287,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         //       ]),
                         // ),
                         Padding(
-                            padding: const EdgeInsets.only(top: 15),
+                            padding: const EdgeInsets.only(top: 15, bottom: 15),
                             child: TextFormField(
                               controller: _correo,
                               keyboardType: TextInputType.emailAddress,
@@ -307,6 +323,73 @@ class _RegisterPageState extends State<RegisterPage> {
                                 }
                               },
                             )),
+                            Row(
+                              children: [
+                                SizedBox(height: 15),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _nacimiento,
+                                    readOnly: true,
+                                    style: TextStyle(
+                                      fontFamily: GoogleFonts.quicksand().fontFamily,
+                                    ),
+                                    decoration: InputDecoration(
+                                  hintText: 'Fecha de nacimiento',
+                                  hintStyle: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Quicksand-SemiBold'),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 0, style: BorderStyle.none),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 0, style: BorderStyle.none),
+                                      borderRadius: BorderRadius.circular(35)),
+                                  filled: true),
+                                    // decoration: InputDecoration(
+                                    //   labelText: 'Fecha',
+                                    //   border: OutlineInputBorder(),
+                                    // ),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                ElevatedButton(
+                                  onPressed: () => _datePicker(context),
+                                  child: Text('Seleccionar Fecha'),
+                                ),
+                              ],
+                            ),
+                            // Padding(
+                            // padding: const EdgeInsets.only(top: 15),
+                            // child: TextFormField(
+                            //   readOnly: true,
+                            //   controller: _nacimiento,
+                            //   style: TextStyle(
+                            //     fontFamily: GoogleFonts.quicksand().fontFamily,
+                            //   ),
+                            //   decoration: InputDecoration(
+                            //       hintText: 'Fecha de nacimiento',
+                            //       hintStyle: const TextStyle(
+                            //           fontWeight: FontWeight.w600,
+                            //           fontFamily: 'Quicksand-SemiBold'),
+                            //       focusedBorder: OutlineInputBorder(
+                            //           borderSide: const BorderSide(
+                            //               width: 0, style: BorderStyle.none),
+                            //           borderRadius: BorderRadius.circular(20)),
+                            //       enabledBorder: OutlineInputBorder(
+                            //           borderSide: const BorderSide(
+                            //               width: 0, style: BorderStyle.none),
+                            //           borderRadius: BorderRadius.circular(35)),
+                            //       filled: true),
+                            //   validator: (value) {
+                            //     if (value!.isEmpty) {
+                            //       return "La fecha de nacimiento es necesaria";
+                            //     } else {
+                            //       return null;
+                            //     }
+                            //   },
+                            // )),
                         Padding(
                             padding: const EdgeInsets.only(top: 15),
                             child: TextFormField(
@@ -375,6 +458,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                 return null;
                               },
                             )),
+                        if (_isRegistering) // Mostrar el icono de carga si _isCreating es true
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child:
+                                CircularProgressIndicator(), // Icono de carga
+                          )
+                        else 
                         Padding(
                             padding: const EdgeInsets.only(top: 30),
                             child: SizedBox(
@@ -390,21 +480,26 @@ class _RegisterPageState extends State<RegisterPage> {
                                               _isRegistering =
                                                   true; // Indica que se está realizando el registro
                                             });
+                                            String cedula = _cedula.text;
                                             String nombre = _nombre.text;
                                             String apellido = _apellido.text;
-                                            String direccion = _direccion.text;
-                                            String ciudad = _ciudad;
-                                            String telefono = _telefono.text;
                                             String correo = _correo.text;
                                             String password = _password;
+                                            String telefono = _telefono.text;
+                                            String nacimiento = _nacimiento.text;
+                                            String direccion = _direccion.text;
+                                            // String ciudad = _ciudad;
                                             bool register = await postData(
-                                                nombre,
-                                                apellido,
-                                                direccion,
-                                                ciudad,
-                                                correo,
-                                                telefono,
-                                                password);
+                                              cedula,
+                                              nombre,
+                                              apellido,
+                                              correo,
+                                              password,
+                                              telefono,
+                                              nacimiento,
+                                              direccion
+                                              // ciudad,
+                                            );
                                             setState(() {
                                               _isRegistering =
                                                   false; // Finaliza el registro, el botón vuelve a estar habilitado
@@ -489,7 +584,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               width: 200,
                               height: 45,
                               child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: _isRegistering
+                                      ? null
+                                      : () {
                                     Navigator.pop(context);
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -514,6 +611,24 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ));
+        
+  }
+  Future<void> _datePicker(BuildContext context) async {
+    final DateTime now = DateTime.now();
+    final DateTime eighteenYearsAgo = now.subtract(Duration(days: 18 * 365));
+
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: eighteenYearsAgo,
+      firstDate: DateTime(1900),
+      lastDate: eighteenYearsAgo,
+    );
+    if (pickedDate != null && pickedDate != _selectDate) {
+      setState(() {
+        _selectDate = pickedDate;
+        _nacimiento.text = DateFormat('yyyy-MM-dd').format(_selectDate);
+      });
+    }
   }
 }
 // Future<void> postData(String cedula, String nombre, String apellido, String direccion, String ciudad, String correo, String telefono, String fechaNacimiento, String password) async {
@@ -557,21 +672,33 @@ String encryptPassword(String password) {
 }
 
 Future<bool> postData(
-    /*String cedula,*/
+    String cedula,
     String nombre,
     String apellido,
-    String direccion,
-    String ciudad,
     String correo,
+    String password,
     String telefono,
-    String password) async {
+    String nacimiento,
+    String direccion,
+    //String ciudad,
+    
+    
+    ) async {
   // Encriptar contraseña
   String encryptedPassword = encryptPassword(password);
   print(encryptedPassword); // Imprime la contraseña encriptada
 
+  String apiUri = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
+  final String usernameApi = '11173482';
+  final String passwordApi = '60-dayfreetrial';
+  final String basicAuth = 'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+
   // Realizar una solicitud GET para obtener los datos existentes
-  final getDataResponse =
-      await http.get(Uri.parse('https://matissa.onrender.com/api/clientes'));
+  final getDataResponse = await http.get(
+    //Uri.parse('http://dylanbolivar1-001-site1.ftempurl.com/api/clientes')
+    Uri.parse(apiUri),
+    headers: <String, String>{'authorization': basicAuth},
+  );
 
   if (getDataResponse.statusCode == 200) {
     // Analizar la respuesta JSON de la solicitud GET
@@ -582,24 +709,25 @@ Future<bool> postData(
         existingData.any((recordCorreo) => recordCorreo['correo'] == correo);
     // ------> Verificar Cédula <-------
     bool telefonoExists = existingData
-        .any((recordTef) => recordTef['telefono'] == int.parse(telefono));
+        .any((recordTef) => recordTef['telefono'] == telefono);
     if (correoExists || telefonoExists) {
       print('El correo o el teléfono ya existe');
       return false;
     } else {
       // Si el registro no existe, realizar la solicitud POST
       final postDataResponse = await http.post(
-        Uri.parse('https://matissa.onrender.com/api/clientes'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse(apiUri),
+        headers: <String, String>{'authorization': basicAuth, 'Content-Type': 'application/json'},
         body: jsonEncode({
-          //'idCliente': cedula,
-          'nombres': nombre,
-          'apellidos': apellido,
-          'telefono': telefono,
-          'direccion': direccion,
-          'ciudad': ciudad,
+          'idCliente': cedula,
+          'nombreCliente': nombre,
+          'apellidoCliente': apellido,
           'correo': correo,
           'contraseña': encryptedPassword,
+          'telefono': telefono,
+          'nacimiento': nacimiento,
+          'direccion': direccion,
+          //'ciudad': ciudad,
           'estado': 1
         }),
       );
@@ -616,7 +744,7 @@ Future<bool> postData(
             'Error al crear el nuevo registro: ${postDataResponse.statusCode}');
       }
       print(
-          "Nombre: $nombre, Apellido: $apellido, Teléfono: $telefono, Dirección: $direccion, Ciudad: $ciudad, Correo: $correo, Contraseña: $encryptedPassword, Estado: 1");
+          "Nombre: $nombre, Apellido: $apellido, Teléfono: $telefono, Dirección: $direccion, Correo: $correo, Contraseña: $encryptedPassword, Estado: 1");
       return true;
     }
   }
@@ -664,3 +792,4 @@ Mailer(String correo, String nombre) async {
   // close the connection
   await connection.close();
 }
+

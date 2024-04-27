@@ -8,7 +8,7 @@ import 'package:matissamovile/pages/widget/textoFrom.dart';
 import '../widget/AppBar.dart';
 
 class PageCitas extends StatefulWidget {
-  final String clienteId;
+  final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
   const PageCitas({Key? key, required this.clienteId, required this.clienteCorreo, required this.clienteContrasena}) : super(key: key);

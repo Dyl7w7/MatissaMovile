@@ -17,6 +17,8 @@ class _MyLoginState extends State<MyLogin> {
   late TextEditingController _correoController = TextEditingController();
   late TextEditingController _passwordController = TextEditingController();
 
+  bool _isLogging = false;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _validateUserName(String? value) {
@@ -48,49 +50,60 @@ class _MyLoginState extends State<MyLogin> {
 
     if (correo == "" || password == "") {
       _showErrorDialog(context, 'Por favor, rellene los campos');
-    }
+    } else {
+      print("entre a la función");
 
-    print("entre a la función");
+      final String url = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
+      final String usernameApi = '11173482';
+      final String passwordApi = '60-dayfreetrial';
 
-    final response = await http.get(
-      Uri.parse('https://matissa.onrender.com/api/clientes/$correo'),
-    );
+      final String basicAuth =
+          'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> userData = jsonDecode(response.body);
+      final response = await http.get(
+        //Uri.parse('dylanbolivar1-001-site1.ftempurl.com/api/clientes')
+        Uri.parse(url),
+        headers: <String, String>{'authorization': basicAuth},
+      );
 
-      if (userData.containsKey('correo')) {
-        final String storedCorreo = userData["correo"];
-        final String storedPassword = userData['contraseña'];
-        final String clienteId = userData['_id'];
+      if (response.statusCode == 200) {
+        final List<dynamic> userData = jsonDecode(response.body);
 
-        String encryptedPassword = encryptPassword(password);
-        print(encryptedPassword); // Imprime la contraseña encriptada
+        final usuario = userData.firstWhere((usuario) => usuario['correo'] == correo, orElse: () => null);
 
-        if (encryptedPassword == storedPassword) {
-          // Puedes hacer lo que necesitas con el ID y otros datos
-          // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
-          print('Usuario ID: $clienteId');
+        if (usuario != null) {
+          final String storedCorreo = usuario['correo'];
+          final String storedPassword = usuario['contraseña'];
+          final int idCliente = usuario['idCliente'];
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => PageCitas(
-                    clienteId: "$clienteId",
-                    clienteCorreo: "$storedCorreo",
-                    clienteContrasena: "$storedPassword")),
-          );
+          String encryptedPassword = encryptPassword(password);
+          print(encryptedPassword); // Imprime la contraseña encriptada
+
+          if (encryptedPassword == storedPassword) {
+            // Puedes hacer lo que necesitas con el ID y otros datos
+            // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
+            print('Usuario ID: $idCliente');
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PageCitas(
+                      clienteId: idCliente,
+                      clienteCorreo: "$storedCorreo",
+                      clienteContrasena: "$storedPassword")),
+            );
+          } else {
+            _showErrorDialog(context, 'Contraseña incorrecta');
+          }
         } else {
-          _showErrorDialog(context, 'Contraseña incorrecta');
+          _showErrorDialog(context, 'Usuario no encontrado');
         }
       } else {
-        _showErrorDialog(context, 'Usuario no encontrado');
+        final dynamic responseData = json.decode(response.body);
+        final errorMessage =
+            responseData['message'] ?? 'Error de inicio de sesión';
+        _showErrorDialog(context, errorMessage);
       }
-    } else {
-      final dynamic responseData = json.decode(response.body);
-      final errorMessage =
-          responseData['message'] ?? 'Error de inicio de sesión';
-      _showErrorDialog(context, errorMessage);
     }
   }
 
@@ -202,6 +215,13 @@ class _MyLoginState extends State<MyLogin> {
                 ),
 
                 const SizedBox(height: 30),
+                 if (_isLogging) // Mostrar el icono de carga si _isCreating es true
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child:
+                        CircularProgressIndicator(), // Icono de carga
+                  )
+                else 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -213,8 +233,25 @@ class _MyLoginState extends State<MyLogin> {
                     minimumSize: const Size(
                         140, 35), // Cambiar el tamaño mínimo del botón aquí
                   ),
-                  onPressed: () {
-                    _login(context);
+                  onPressed: _isLogging
+                      ? null
+                      : () async {
+                    setState(() {
+                      _isLogging =
+                          true; // Indica que se está realizando el registro
+                    });
+                    try{
+                      await _login(context);
+                    } catch(e) {
+                      print('Error al enviar ingresar: $e');
+                    }
+
+                    setState(() {
+                      _isLogging = false; // Indica que se está realizando el registro
+                    });
+                    
+                    
+                    
                   },
                   child: Text(
                     'Ingresar',
@@ -256,7 +293,7 @@ class _MyLoginState extends State<MyLogin> {
                     minimumSize: const Size(
                         140, 35), // Cambiar el tamaño mínimo del botón aquí
                   ),
-                  onPressed: () {
+                  onPressed: _isLogging ? null : () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -8,7 +8,7 @@ import 'package:matissamovile/pages/widget/textoFrom.dart';
 import '../widget/AppBar.dart';
 
 class PagePedidos extends StatefulWidget {
-  final String clienteId;
+  final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
   const PagePedidos(

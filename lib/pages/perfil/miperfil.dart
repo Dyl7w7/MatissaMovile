@@ -8,7 +8,7 @@ import 'package:matissamovile/pages/widget/AppBar.dart';
 import 'package:matissamovile/pages/widget/drawer.dart';
 
 class PerfilPage extends StatefulWidget {
-  final String clienteId;
+  final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
   const PerfilPage(
@@ -26,6 +26,8 @@ class _PerfilPageState extends State<PerfilPage> {
   String _nombres = "";
   String _apellidos = "";
   String _direccion = "";
+  bool _isEditing = false;
+
   @override
   void initState() {
     super.initState();
@@ -86,7 +88,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             padding: const EdgeInsets.only(top: 15),
                             child: TextFormField(
                               controller: _nombresController,
-                              enabled: false,
+                              readOnly: true,
                               style: TextStyle(
                                 fontFamily: GoogleFonts.quicksand().fontFamily,
                               ),
@@ -115,7 +117,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             padding: const EdgeInsets.only(top: 15),
                             child: TextFormField(
                               controller: _apellidosController,
-                              enabled: false,
+                              readOnly: true,
                               style: TextStyle(
                                 fontFamily: GoogleFonts.quicksand().fontFamily,
                               ),
@@ -144,7 +146,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             padding: const EdgeInsets.only(top: 15),
                             child: TextFormField(
                               controller: _direccionController,
-                              enabled: false,
+                              readOnly: true,
                               style: TextStyle(
                                 fontFamily: GoogleFonts.quicksand().fontFamily,
                               ),
@@ -305,14 +307,27 @@ class _PerfilPageState extends State<PerfilPage> {
                                 }
                               },
                             )),
+                        if (_isEditing) // Mostrar el icono de carga si _isCreating es true
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child:
+                                CircularProgressIndicator(), // Icono de carga
+                          )
+                        else 
                         Padding(
                             padding: const EdgeInsets.only(top: 30),
                             child: SizedBox(
                               width: 200,
                               height: 45,
                               child: ElevatedButton(
-                                  onPressed: () async {
+                                  onPressed: _isEditing
+                                      ? null
+                                      : () async {
                                     if (_formKey.currentState!.validate()) {
+                                      setState(() {
+                                        _isEditing =
+                                            true; // Indica que se está realizando el registro
+                                      });
                                       String nombres = _nombresController.text;
                                       String apellidos =
                                           _apellidosController.text;
@@ -328,6 +343,10 @@ class _PerfilPageState extends State<PerfilPage> {
                                           direccion,
                                           lastPassword,
                                           newPassword);
+                                          setState(() {
+                                            _isEditing =
+                                                false; // Indica que se está realizando el registro
+                                          });
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                         content: Row(
@@ -396,7 +415,9 @@ class _PerfilPageState extends State<PerfilPage> {
                               width: 200,
                               height: 45,
                               child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: _isEditing
+                                      ? null
+                                      : () {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -433,14 +454,27 @@ class _PerfilPageState extends State<PerfilPage> {
   }
 
   Future<void> fetchCliente() async {
-    String clienteCorreo = widget.clienteCorreo;
+    int clienteId = widget.clienteId;
+
+    final String url = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    
+    
     final response = await http.get(
-        Uri.parse('https://matissa.onrender.com/api/clientes/$clienteCorreo'));
+      //Uri.parse('http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId')
+      Uri.parse(url),
+      headers: <String, String>{'authorization': basicAuth},
+    );
 
     if (response.statusCode == 200) {
       Map<String, dynamic> clienteData = jsonDecode(response.body);
-      _nombres = clienteData['nombres'] ?? "";
-      _apellidos = clienteData['apellidos'] ?? "";
+      print(clienteData);
+      _nombres = clienteData['nombreCliente'] ?? "";
+      _apellidos = clienteData['apellidoCliente'] ?? "";
       _direccion = clienteData['direccion'] ?? "";
 
       _nombresController.text = _nombres;
@@ -465,33 +499,55 @@ class _PerfilPageState extends State<PerfilPage> {
     String actualEncryptedPassword = encryptPassword(lastPassword);
     print(actualEncryptedPassword); // Imprime la contraseña encriptada
 
-    String clienteId = widget.clienteId;
-    String apiUri = 'https://matissa.onrender.com/api/clientes/$clienteId';
+    int clienteId = widget.clienteId;
+    String apiUri = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth = 'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+
     print(
         'Datos formulario: $nombres, $apellidos, $direccion, $lastPassword, $encryptedPassword');
-    final getDataResponse = await http.get(Uri.parse(apiUri));
+    final getDataResponse = await http.get(
+      Uri.parse(apiUri),
+      headers: <String, String>{'authorization': basicAuth},
+    );
     if (getDataResponse.statusCode == 200) {
       Map<String, dynamic> getPassword = jsonDecode(getDataResponse.body);
       print('Datos del Cliente: $getPassword');
       if (getPassword['contraseña'] == actualEncryptedPassword) {
+        print('Contraseña válida AAAAAAAAAAAAAAAAAAAAAAAA');
         // Map<String, dynamic> requestBody = {
         //   'nombres': nombres,
         //   'apellidos': apellidos,
         //   'direccion': direccion,
         //   'contraseña': newPassword
         // };
+        String apiUriPut = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/$clienteId';
         final putResponse = await http.put(
-          Uri.parse(apiUri),
-          headers: {'Content-Type': 'application/json'},
+          Uri.parse(apiUriPut),
+          headers: <String, String>{'authorization': basicAuth, 'Content-Type': 'application/json'},
           body: jsonEncode({
-            'nombres': nombres,
-            'apellidos': apellidos,
-            'direccion': direccion,
-            'contraseña': encryptedPassword
+            "idCliente": clienteId,
+            "nombreCliente": getPassword['nombreCliente'],
+            "apellidoCliente": getPassword['apellidoCliente'],
+            "correo": getPassword['correo'],
+            "contraseña": encryptedPassword,
+            "telefono": getPassword['telefono'],
+            "nacimiento": getPassword['nacimiento'],
+            "direccion": getPassword['direccion'],
+            "estado": 1
+            
           }),
         );
         if (putResponse.statusCode == 200) {
           print('Cliente actualizado');
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => PerfilPage(
+              clienteId: widget.clienteId,
+              clienteCorreo: widget.clienteCorreo,
+              clienteContrasena: widget.clienteContrasena,
+            )),
+          );
           return true;
         } else {
           print('Error al actualizar: ${putResponse.statusCode}');
