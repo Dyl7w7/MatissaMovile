@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:matissamovile/pages/Citas/pageCitas.dart';
 import 'package:matissamovile/pages/Login/login.dart';
-import 'package:matissamovile/pages/Pedidos/pagePedidos.dart';
+import 'package:matissamovile/pages/Pedidos/pagePedido.dart';
 import 'package:matissamovile/pages/Productos/pageProductos.dart';
 import 'package:matissamovile/pages/Register/prueba.dart';
 import 'package:matissamovile/pages/perfil/miperfil.dart';
@@ -150,7 +150,7 @@ class _MyDrawerState extends State<MyDrawer> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PagePedidos(
+                              builder: (context) => PagePedido(
                                     clienteId: widget.clienteId,
                                     clienteCorreo: widget.clienteCorreo,
                                     clienteContrasena: widget.clienteContrasena,
@@ -184,29 +184,29 @@ class _MyDrawerState extends State<MyDrawer> {
                                   )));
                     },
                   ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.badge,
-                      size: 30,
-                      color: Colors.black,
-                    ),
-                    title: Text(
-                      'Prueba',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontFamily: GoogleFonts.quicksand().fontFamily,
-                      ),
-                    ),
-                    selected: _selectedIndex == 2,
-                    onTap: () {
-                      _onItemTapped(3);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DatePickerField()));
-                    },
-                  ),
+                  // ListTile(
+                  //   leading: const Icon(
+                  //     Icons.badge,
+                  //     size: 30,
+                  //     color: Colors.black,
+                  //   ),
+                  //   title: Text(
+                  //     'Prueba',
+                  //     style: TextStyle(
+                  //       fontSize: 20,
+                  //       color: Colors.black,
+                  //       fontFamily: GoogleFonts.quicksand().fontFamily,
+                  //     ),
+                  //   ),
+                  //   selected: _selectedIndex == 2,
+                  //   onTap: () {
+                  //     _onItemTapped(3);
+                  //     Navigator.pushReplacement(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => DatePickerField()));
+                  //   },
+                  // ),
                 ],
               ),
             ),

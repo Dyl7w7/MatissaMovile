@@ -325,7 +325,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             )),
                             Row(
                               children: [
-                                SizedBox(height: 15),
+                                
                                 Expanded(
                                   child: TextFormField(
                                     controller: _nacimiento,
@@ -347,6 +347,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                           width: 0, style: BorderStyle.none),
                                       borderRadius: BorderRadius.circular(35)),
                                   filled: true),
+                                  validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "La fecha de nacimiento es necesaria";
+                                } else {
+                                  return null;
+                                }
+                                }
                                     // decoration: InputDecoration(
                                     //   labelText: 'Fecha',
                                     //   border: OutlineInputBorder(),
@@ -356,7 +363,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 SizedBox(width: 10),
                                 ElevatedButton(
                                   onPressed: () => _datePicker(context),
-                                  child: Text('Seleccionar Fecha'),
+                                  child: Text('Seleccionar'),
                                 ),
                               ],
                             ),

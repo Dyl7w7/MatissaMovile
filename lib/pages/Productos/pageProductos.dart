@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:matissamovile/pages/widget/drawer.dart';
 import 'package:matissamovile/pages/widget/textoFrom.dart';
+import 'package:intl/intl.dart';
 import '../widget/AppBar.dart';
 
 class PageProductos extends StatefulWidget {
@@ -23,6 +24,7 @@ class PageProductos extends StatefulWidget {
 
 class _PageProductosState extends State<PageProductos> {
   List<Map<String, dynamic>> productos = [];
+  String status = "";
   @override
   void initState() {
     super.initState();
@@ -55,14 +57,15 @@ class _PageProductosState extends State<PageProductos> {
                     tileColor: const Color.fromARGB(255, 204, 204, 204),
                   ),
                   ListTile(
-                      title: Text(
-                    'Precio venta: ${productos[index]["precioVenta"]}',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(fontSize: 18),
-                  )),
-                  ListTile(
-                    subtitle: Text('Estado: ${productos[index]["estado"]}'),
-                  ),
+                    title: Text(
+                      'Precio venta: \$ ${NumberFormat('#,###', 'es_ES').format(productos[index]["precioVenta"])}',
+                      //'Precio venta: ${NumberFormat.currency(locale: 'es_ES', symbol: '\$', decimalDigits: 0).format(productos[index]["precioVenta"])}',
+                      //'Precio venta: ${productos[index]["precioVenta"]}',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    subtitle: Text('Estado: ${ (productos[index]["estado"] == 1 ? 'En venta' : 'Agotado')}'),
+                    ),
                 ],
               ));
             }));
@@ -87,12 +90,14 @@ class _PageProductosState extends State<PageProductos> {
       List<dynamic> jsonData = jsonDecode(response.body);
       List<Map<String, dynamic>> newData = [];
       for (var item in jsonData) {
-        newData.add({
+        if(item['estado'] == 1 || item['estado'] == 2){
+          newData.add({
           'idProducto': item['idProducto'],
           'nombreProducto': item['nombreProducto'],
           'precioVenta': item['precioVenta'],
           'estado': item['estado']
-        });
+          });
+        }
       }
 
       setState(() {
