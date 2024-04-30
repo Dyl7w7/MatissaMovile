@@ -19,7 +19,6 @@ class _RegisterPageState extends State<RegisterPage> {
   // List<String> list = <String>["Medellín"];
   // String _ciudad = "Medellín";
   late DateTime _selectDate;
-  
 
   bool _isRegistering = false;
 
@@ -38,8 +37,9 @@ class _RegisterPageState extends State<RegisterPage> {
     _nacimiento = TextEditingController();
     _selectDate = DateTime.now();
   }
+
   @override
-    void dispose() {
+  void dispose() {
     _nacimiento.dispose();
     super.dispose();
   }
@@ -323,80 +323,84 @@ class _RegisterPageState extends State<RegisterPage> {
                                 }
                               },
                             )),
-                            Row(
-                              children: [
-                                
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _nacimiento,
-                                    readOnly: true,
-                                    style: TextStyle(
-                                      fontFamily: GoogleFonts.quicksand().fontFamily,
-                                    ),
-                                    decoration: InputDecoration(
-                                  hintText: 'Fecha de nacimiento',
-                                  hintStyle: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Quicksand-SemiBold'),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(35)),
-                                  filled: true),
-                                  validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "La fecha de nacimiento es necesaria";
-                                } else {
-                                  return null;
-                                }
-                                }
-                                    // decoration: InputDecoration(
-                                    //   labelText: 'Fecha',
-                                    //   border: OutlineInputBorder(),
-                                    // ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                  controller: _nacimiento,
+                                  readOnly: true,
+                                  style: TextStyle(
+                                    fontFamily:
+                                        GoogleFonts.quicksand().fontFamily,
                                   ),
-                                ),
-                                SizedBox(width: 10),
-                                ElevatedButton(
-                                  onPressed: () => _datePicker(context),
-                                  child: Text('Seleccionar'),
-                                ),
-                              ],
+                                  decoration: InputDecoration(
+                                      hintText: 'Fecha de nacimiento',
+                                      hintStyle: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'Quicksand-SemiBold'),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                              width: 0,
+                                              style: BorderStyle.none),
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                              width: 0,
+                                              style: BorderStyle.none),
+                                          borderRadius:
+                                              BorderRadius.circular(35)),
+                                      filled: true),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "La fecha de nacimiento es necesaria";
+                                    } else {
+                                      return null;
+                                    }
+                                  }
+                                  // decoration: InputDecoration(
+                                  //   labelText: 'Fecha',
+                                  //   border: OutlineInputBorder(),
+                                  // ),
+                                  ),
                             ),
-                            // Padding(
-                            // padding: const EdgeInsets.only(top: 15),
-                            // child: TextFormField(
-                            //   readOnly: true,
-                            //   controller: _nacimiento,
-                            //   style: TextStyle(
-                            //     fontFamily: GoogleFonts.quicksand().fontFamily,
-                            //   ),
-                            //   decoration: InputDecoration(
-                            //       hintText: 'Fecha de nacimiento',
-                            //       hintStyle: const TextStyle(
-                            //           fontWeight: FontWeight.w600,
-                            //           fontFamily: 'Quicksand-SemiBold'),
-                            //       focusedBorder: OutlineInputBorder(
-                            //           borderSide: const BorderSide(
-                            //               width: 0, style: BorderStyle.none),
-                            //           borderRadius: BorderRadius.circular(20)),
-                            //       enabledBorder: OutlineInputBorder(
-                            //           borderSide: const BorderSide(
-                            //               width: 0, style: BorderStyle.none),
-                            //           borderRadius: BorderRadius.circular(35)),
-                            //       filled: true),
-                            //   validator: (value) {
-                            //     if (value!.isEmpty) {
-                            //       return "La fecha de nacimiento es necesaria";
-                            //     } else {
-                            //       return null;
-                            //     }
-                            //   },
-                            // )),
+                            SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () => _datePicker(context),
+                              child: Text('Seleccionar'),
+                            ),
+                          ],
+                        ),
+                        // Padding(
+                        // padding: const EdgeInsets.only(top: 15),
+                        // child: TextFormField(
+                        //   readOnly: true,
+                        //   controller: _nacimiento,
+                        //   style: TextStyle(
+                        //     fontFamily: GoogleFonts.quicksand().fontFamily,
+                        //   ),
+                        //   decoration: InputDecoration(
+                        //       hintText: 'Fecha de nacimiento',
+                        //       hintStyle: const TextStyle(
+                        //           fontWeight: FontWeight.w600,
+                        //           fontFamily: 'Quicksand-SemiBold'),
+                        //       focusedBorder: OutlineInputBorder(
+                        //           borderSide: const BorderSide(
+                        //               width: 0, style: BorderStyle.none),
+                        //           borderRadius: BorderRadius.circular(20)),
+                        //       enabledBorder: OutlineInputBorder(
+                        //           borderSide: const BorderSide(
+                        //               width: 0, style: BorderStyle.none),
+                        //           borderRadius: BorderRadius.circular(35)),
+                        //       filled: true),
+                        //   validator: (value) {
+                        //     if (value!.isEmpty) {
+                        //       return "La fecha de nacimiento es necesaria";
+                        //     } else {
+                        //       return null;
+                        //     }
+                        //   },
+                        // )),
                         Padding(
                             padding: const EdgeInsets.only(top: 15),
                             child: TextFormField(
@@ -471,120 +475,126 @@ class _RegisterPageState extends State<RegisterPage> {
                             child:
                                 CircularProgressIndicator(), // Icono de carga
                           )
-                        else 
-                        Padding(
-                            padding: const EdgeInsets.only(top: 30),
-                            child: SizedBox(
-                              width: 200,
-                              height: 45,
-                              child: ElevatedButton(
-                                  onPressed: _isRegistering
-                                      ? null
-                                      : () async {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            setState(() {
-                                              _isRegistering =
-                                                  true; // Indica que se está realizando el registro
-                                            });
-                                            String cedula = _cedula.text;
-                                            String nombre = _nombre.text;
-                                            String apellido = _apellido.text;
-                                            String correo = _correo.text;
-                                            String password = _password;
-                                            String telefono = _telefono.text;
-                                            String nacimiento = _nacimiento.text;
-                                            String direccion = _direccion.text;
-                                            // String ciudad = _ciudad;
-                                            bool register = await postData(
-                                              cedula,
-                                              nombre,
-                                              apellido,
-                                              correo,
-                                              password,
-                                              telefono,
-                                              nacimiento,
-                                              direccion
-                                              // ciudad,
-                                            );
-                                            setState(() {
-                                              _isRegistering =
-                                                  false; // Finaliza el registro, el botón vuelve a estar habilitado
-                                            });
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                              content: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Icon(
-                                                    register
-                                                        ? Icons.check_circle
-                                                        : Icons.error,
-                                                    color: Color.fromARGB(
-                                                        255, 6, 6, 6),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  Text(
-                                                    register
-                                                        ? "Se ha registrado correctamente"
-                                                        : "Error: el correo o el teléfono \n ya estan registrados",
-                                                    style: TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 255, 255, 255),
-                                                        fontFamily:
-                                                            'Quicksand-SemiBold'),
-                                                  )
-                                                ],
-                                              ),
-                                              duration: const Duration(
-                                                  milliseconds: 2000),
-                                              width: 300,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0,
-                                                      vertical: 10),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(3.0),
-                                              ),
-                                              backgroundColor: register
-                                                  ? const Color.fromARGB(
-                                                      255, 12, 195, 106)
-                                                  : Colors.red,
-                                            ));
-                                            if (register) {
-                                              Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const MyLogin()));
+                        else
+                          Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: SizedBox(
+                                width: 200,
+                                height: 45,
+                                child: ElevatedButton(
+                                    onPressed: _isRegistering
+                                        ? null
+                                        : () async {
+                                            if (_formKey.currentState!
+                                                .validate()) {
+                                              setState(() {
+                                                _isRegistering =
+                                                    true; // Indica que se está realizando el registro
+                                              });
+                                              String cedula = _cedula.text;
+                                              String nombre = _nombre.text;
+                                              String apellido = _apellido.text;
+                                              String correo = _correo.text;
+                                              String password = _password;
+                                              String telefono = _telefono.text;
+                                              String nacimiento =
+                                                  _nacimiento.text;
+                                              String direccion =
+                                                  _direccion.text;
+                                              // String ciudad = _ciudad;
+                                              bool register = await postData(
+                                                  cedula,
+                                                  nombre,
+                                                  apellido,
+                                                  correo,
+                                                  password,
+                                                  telefono,
+                                                  nacimiento,
+                                                  direccion
+                                                  // ciudad,
+                                                  );
+                                              setState(() {
+                                                _isRegistering =
+                                                    false; // Finaliza el registro, el botón vuelve a estar habilitado
+                                              });
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                content: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      register
+                                                          ? Icons.check_circle
+                                                          : Icons.error,
+                                                      color: Color.fromARGB(
+                                                          255, 6, 6, 6),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      register
+                                                          ? "Se ha registrado correctamente"
+                                                          : "Error: el correo o el teléfono \n ya estan registrados",
+                                                      style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              255,
+                                                              255,
+                                                              255),
+                                                          fontFamily:
+                                                              'Quicksand-SemiBold'),
+                                                    )
+                                                  ],
+                                                ),
+                                                duration: const Duration(
+                                                    milliseconds: 2000),
+                                                width: 300,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0,
+                                                        vertical: 10),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          3.0),
+                                                ),
+                                                backgroundColor: register
+                                                    ? const Color.fromARGB(
+                                                        255, 12, 195, 106)
+                                                    : Colors.red,
+                                              ));
+                                              if (register) {
+                                                Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const MyLogin()));
+                                              }
                                             }
-                                          }
-                                        },
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 10,
-                                    backgroundColor: const Color.fromRGBO(
-                                        60,
-                                        195,
-                                        189,
-                                        1), // background (button) color
-                                    foregroundColor:
-                                        Colors.white, // foreground (text) color
-                                  ),
-                                  child: Text(
-                                    'Registrarse',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily:
-                                            GoogleFonts.quicksand().fontFamily,
-                                        fontSize: 20),
-                                  )),
-                            )),
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 10,
+                                      backgroundColor: const Color.fromRGBO(
+                                          60,
+                                          195,
+                                          189,
+                                          1), // background (button) color
+                                      foregroundColor: Colors
+                                          .white, // foreground (text) color
+                                    ),
+                                    child: Text(
+                                      'Registrarse',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: GoogleFonts.quicksand()
+                                              .fontFamily,
+                                          fontSize: 20),
+                                    )),
+                              )),
                         Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: SizedBox(
@@ -594,8 +604,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   onPressed: _isRegistering
                                       ? null
                                       : () {
-                                    Navigator.pop(context);
-                                  },
+                                          Navigator.pop(context);
+                                        },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 10,
                                     backgroundColor: const Color.fromRGBO(0, 0,
@@ -618,8 +628,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ));
-        
   }
+
   Future<void> _datePicker(BuildContext context) async {
     final DateTime now = DateTime.now();
     final DateTime eighteenYearsAgo = now.subtract(Duration(days: 18 * 365));
@@ -679,26 +689,27 @@ String encryptPassword(String password) {
 }
 
 Future<bool> postData(
-    String cedula,
-    String nombre,
-    String apellido,
-    String correo,
-    String password,
-    String telefono,
-    String nacimiento,
-    String direccion,
-    //String ciudad,
-    
-    
-    ) async {
+  String cedula,
+  String nombre,
+  String apellido,
+  String correo,
+  String password,
+  String telefono,
+  String nacimiento,
+  String direccion,
+  //String ciudad,
+) async {
   // Encriptar contraseña
   String encryptedPassword = encryptPassword(password);
   print(encryptedPassword); // Imprime la contraseña encriptada
 
   String apiUri = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
+  String apiUserUri =
+      'http://dylanbolivar1-001-site1.ftempurl.com/api/usuarios';
   final String usernameApi = '11173482';
   final String passwordApi = '60-dayfreetrial';
-  final String basicAuth = 'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+  final String basicAuth =
+      'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
 
   // Realizar una solicitud GET para obtener los datos existentes
   final getDataResponse = await http.get(
@@ -707,24 +718,36 @@ Future<bool> postData(
     headers: <String, String>{'authorization': basicAuth},
   );
 
+  final getUserDataResponse = await http.get(
+    //Uri.parse('http://dylanbolivar1-001-site1.ftempurl.com/api/clientes')
+    Uri.parse(apiUserUri),
+    headers: <String, String>{'authorization': basicAuth},
+  );
+
   if (getDataResponse.statusCode == 200) {
     // Analizar la respuesta JSON de la solicitud GET
     final List<dynamic> existingData = jsonDecode(getDataResponse.body);
+    final List<dynamic> existUserData = jsonDecode(getUserDataResponse.body);
 
     // Verificar si el nuevo registro con la cédula ya existe
+    bool correoUserExist =
+        existUserData.any((recordCorreo) => recordCorreo['correo'] == correo);
     bool correoExists =
         existingData.any((recordCorreo) => recordCorreo['correo'] == correo);
     // ------> Verificar Cédula <-------
-    bool telefonoExists = existingData
-        .any((recordTef) => recordTef['telefono'] == telefono);
-    if (correoExists || telefonoExists) {
-      print('El correo o el teléfono ya existe');
+    bool cedulaExists =
+        existingData.any((recordCed) => recordCed['idCliente'] == cedula);
+    if (correoExists || cedulaExists || correoUserExist) {
+      print('El correo o la cédula ya estan registrados');
       return false;
     } else {
       // Si el registro no existe, realizar la solicitud POST
       final postDataResponse = await http.post(
         Uri.parse(apiUri),
-        headers: <String, String>{'authorization': basicAuth, 'Content-Type': 'application/json'},
+        headers: <String, String>{
+          'authorization': basicAuth,
+          'Content-Type': 'application/json'
+        },
         body: jsonEncode({
           'idCliente': cedula,
           'nombreCliente': nombre,
@@ -799,4 +822,3 @@ Mailer(String correo, String nombre) async {
   // close the connection
   await connection.close();
 }
-
