@@ -83,6 +83,7 @@ class PageDetallePedido extends StatefulWidget {
 class _PageDetallePedidoState extends State<PageDetallePedido> {
   bool _isCreating = false;
   bool _loaded = false;
+  bool _stock = true;
   final String url =
       'http://dylanbolivar1-001-site1.ftempurl.com/api/productos';
   final String username = '11173482';
@@ -169,6 +170,9 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
         } else {
           _showErrorDialog(
               context, producto.nombre, 'No tenemos suficientes productos');
+          setState(() {
+            _stock = false;
+          });
         }
       }
 
@@ -399,7 +403,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
             ),
           ],
         ),
-        duration: const Duration(milliseconds: 2000),
+        duration: const Duration(milliseconds: 4000),
         width: 350,
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
         behavior: SnackBarBehavior.floating,
@@ -473,7 +477,8 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
           Padding(
             padding: EdgeInsets.all(0.0),
             child: Container(
-              color: Color.fromARGB(255, 255, 255, 255), // Color de fondo del título
+              color: Color.fromARGB(
+                  255, 255, 255, 255), // Color de fondo del título
               child: ListTile(
                 title: Text(
                   "Seleccione los productos",
@@ -482,39 +487,38 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                     fontSize: 35,
                     fontWeight: FontWeight.bold,
                     color: Colors.black, // Color del texto del título
-                  ),  
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
           ),
-          if (!_loaded)
-            CircularProgressIndicator(),
+          if (!_loaded) CircularProgressIndicator(),
           if (_loaded)
-          Padding(
-            padding: EdgeInsets.all(0.0),
-            child: Container(
-              color: Color.fromARGB(255, 255, 255, 255), // Color de fondo del título
-              child: TextField(
-                controller: _controller,
-                onChanged: (value) {
-                  setState(() {
-                    // Filtrar la lista de productos según el término de búsqueda
-                    productosFiltrados = productos
-                        .where((producto) => producto.nombre
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
-                        .toList();
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Buscar producto',
-                  prefixIcon: Icon(Icons.search),
+            Padding(
+              padding: EdgeInsets.all(0.0),
+              child: Container(
+                color: Color.fromARGB(
+                    255, 255, 255, 255), // Color de fondo del título
+                child: TextField(
+                  controller: _controller,
+                  onChanged: (value) {
+                    setState(() {
+                      // Filtrar la lista de productos según el término de búsqueda
+                      productosFiltrados = productos
+                          .where((producto) => producto.nombre
+                              .toLowerCase()
+                              .contains(value.toLowerCase()))
+                          .toList();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Buscar producto',
+                    prefixIcon: Icon(Icons.search),
+                  ),
                 ),
               ),
             ),
-          ),
-            
           Expanded(
             child: ListView.builder(
               itemCount: productosFiltrados.length,
@@ -528,7 +532,6 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                 return Container(
                   margin: EdgeInsets.all(6),
                   child: ListTile(
-                    
                     tileColor: Color.fromARGB(255, 240, 240, 240),
                     title: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5),
@@ -539,38 +542,57 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                             color: Color.fromARGB(255, 0, 193, 207),
                             size: 30,
                           ),
-                          Text('$cantidad - ${productosFiltrados[index].nombre}'),
+                          Text(
+                              '$cantidad - ${productosFiltrados[index].nombre}'),
                         ],
                       ),
                     ),
                     //subtitle: Text('\$ ${productos[index].precio.toStringAsFixed(2)}'),
                     subtitle: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5),
-                      child: Text(
-                          ' Precio: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}'),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                  ' ${productosFiltrados[index].cantidad} disponibles'),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                ' Precio: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}',
+                              )
+                            ],
+                          )
+                        ],
+                      ),
                     ),
 
-                    trailing: 
-                    Row(
+                    trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           onPressed: () {
                             double precio = productos[index].precio;
-                            removeFromCart(productosFiltrados[index].id, cantidad, precio);
+                            removeFromCart(
+                                productosFiltrados[index].id, cantidad, precio);
                             setState(() {
-                              cantidadSeleccionada[productId] = carrito[productId] ?? 0;
+                              cantidadSeleccionada[productId] =
+                                  carrito[productId] ?? 0;
                             });
                           },
                           icon: Icon(Icons.remove),
                         ),
                         Text('$cantidad'),
                         IconButton(
-                          onPressed: (){
+                          onPressed: () {
                             double precio = productos[index].precio;
-                            addToCart(productosFiltrados[index].id, cantidad, precio);
+                            addToCart(
+                                productosFiltrados[index].id, cantidad, precio);
                             setState(() {
-                              cantidadSeleccionada[productId] = carrito[productId] ?? 0;
+                              cantidadSeleccionada[productId] =
+                                  carrito[productId] ?? 0;
                             });
                           },
                           icon: Icon(Icons.add),
@@ -583,7 +605,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                     //   onSelected: (int productoId, int quantity) {
                     //     double precio = productos[index].precio;
                     //     if (quantity > 0) {
-                          
+
                     //       // int idProducto = productos[index].id;
                     //       // String nombre = productos[index].nombre;
                     //       // double precio = productos[index].precio;
@@ -606,6 +628,10 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
               },
             ),
           ),
+          Container(
+            height: 80,
+            color: Color.fromARGB(255, 255, 255, 255),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -617,7 +643,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
         ),
         onPressed: () {
           obtenerTotalPedido();
-          if (carrito2.isNotEmpty) {
+          if (carrito2.isNotEmpty && _stock) {
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -737,10 +763,17 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                       title: const Text("Alerta"),
-                      content: const Text("No ha seleccionado productos"),
+                      content: Text(_stock
+                          ? 'No ha seleccionado productos'
+                          : 'No hay suficientes productos'),
                       actions: [
                         TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
+                            onPressed: () {
+                              setState(() {
+                                _stock = false;
+                              });
+                              Navigator.of(context).pop();
+                            },
                             child: const Text("Aceptar"))
                       ]);
                 });
