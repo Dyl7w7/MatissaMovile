@@ -82,6 +82,7 @@ class PageDetallePedido extends StatefulWidget {
 
 class _PageDetallePedidoState extends State<PageDetallePedido> {
   bool _isCreating = false;
+  bool _loaded = false;
   final String url =
       'http://dylanbolivar1-001-site1.ftempurl.com/api/productos';
   final String username = '11173482';
@@ -120,6 +121,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
       setState(() {
         productos = newData;
         productosFiltrados = newData;
+        _loaded = true;
       });
     } else {
       print('Error: ${response.statusCode}');
@@ -128,6 +130,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
 
   void addToCart(int id, int quantity, double price) {
     setState(() {
+      quantity++;
       carrito[id] = quantity;
       // totalPedido += price;
     });
@@ -136,7 +139,8 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
 
   void removeFromCart(int productId, int quantity, double price) {
     setState(() {
-      carrito.remove(productId);
+      quantity--;
+      carrito[productId] = quantity;
       // if (totalPedido > 0){
       //   totalPedido -= price * quantity;
       // } else {
@@ -465,36 +469,52 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
         clienteContrasena: widget.clienteContrasena,
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              "Seleccione los productos",
-              style: TextStyle(
-                  fontFamily: GoogleFonts.quicksand().fontFamily,
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+            padding: EdgeInsets.all(0.0),
+            child: Container(
+              color: Color.fromARGB(255, 255, 255, 255), // Color de fondo del título
+              child: ListTile(
+                title: Text(
+                  "Seleccione los productos",
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.quicksand().fontFamily,
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // Color del texto del título
+                  ),  
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ),
-          TextField(
-            controller: _controller,
-            onChanged: (value) {
-              setState(() {
-                // Filtrar la lista de productos según el término de búsqueda
-                productosFiltrados = productos
-                    .where((producto) => producto.nombre
-                        .toLowerCase()
-                        .contains(value.toLowerCase()))
-                    .toList();
-              });
-            },
-            decoration: InputDecoration(
-              hintText: 'Buscar producto',
-              prefixIcon: Icon(Icons.search),
+          if (!_loaded)
+            CircularProgressIndicator(),
+          if (_loaded)
+          Padding(
+            padding: EdgeInsets.all(0.0),
+            child: Container(
+              color: Color.fromARGB(255, 255, 255, 255), // Color de fondo del título
+              child: TextField(
+                controller: _controller,
+                onChanged: (value) {
+                  setState(() {
+                    // Filtrar la lista de productos según el término de búsqueda
+                    productosFiltrados = productos
+                        .where((producto) => producto.nombre
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                        .toList();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Buscar producto',
+                  prefixIcon: Icon(Icons.search),
+                ),
+              ),
             ),
           ),
+            
           Expanded(
             child: ListView.builder(
               itemCount: productosFiltrados.length,
@@ -505,54 +525,82 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                 print('ID: $productId');
                 print('Cant: $cantidad');
 
-                return ListTile(
-                  title: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: Row(
+                return Container(
+                  margin: EdgeInsets.all(6),
+                  child: ListTile(
+                    
+                    tileColor: Color.fromARGB(255, 240, 240, 240),
+                    title: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.add_shopping_cart,
+                            color: Color.fromARGB(255, 0, 193, 207),
+                            size: 30,
+                          ),
+                          Text('$cantidad - ${productosFiltrados[index].nombre}'),
+                        ],
+                      ),
+                    ),
+                    //subtitle: Text('\$ ${productos[index].precio.toStringAsFixed(2)}'),
+                    subtitle: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                          ' Precio: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}'),
+                    ),
+
+                    trailing: 
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.add_shopping_cart,
-                          color: Color.fromARGB(255, 0, 207, 17),
-                          size: 30,
-                        ),
-                        Text('  ${productosFiltrados[index].nombre}'),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text('x'),
+                        IconButton(
+                          onPressed: () {
+                            double precio = productos[index].precio;
+                            removeFromCart(productosFiltrados[index].id, cantidad, precio);
+                            setState(() {
+                              cantidadSeleccionada[productId] = carrito[productId] ?? 0;
+                            });
+                          },
+                          icon: Icon(Icons.remove),
                         ),
                         Text('$cantidad'),
+                        IconButton(
+                          onPressed: (){
+                            double precio = productos[index].precio;
+                            addToCart(productosFiltrados[index].id, cantidad, precio);
+                            setState(() {
+                              cantidadSeleccionada[productId] = carrito[productId] ?? 0;
+                            });
+                          },
+                          icon: Icon(Icons.add),
+                        ),
                       ],
                     ),
-                  ),
-                  //subtitle: Text('\$ ${productos[index].precio.toStringAsFixed(2)}'),
-                  subtitle: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
-                        ' Precio: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}'),
-                  ),
-
-                  trailing: QuantitySelector(
-                    initialQuantity: cantidad,
-                    productoId: productId,
-                    onSelected: (int productoId, int quantity) {
-                      double precio = productos[index].precio;
-                      if (quantity > 0) {
-                        setState(() {
-                          cantidadSeleccionada[productId] = cantidad;
-                        });
-                        // int idProducto = productos[index].id;
-                        // String nombre = productos[index].nombre;
-                        // double precio = productos[index].precio;
-                        // addToCart(productos[index], idProducto, nombre, quantity, precio);
-                        addToCart(
-                            productosFiltrados[index].id, quantity, precio);
-                        print(quantity);
-                        print(carrito);
-                      } else {
-                        removeFromCart(
-                            productosFiltrados[index].id, quantity, precio);
-                      }
-                    },
+                    // QuantitySelector(
+                    //   initialQuantity: cantidad,
+                    //   productoId: productId,
+                    //   onSelected: (int productoId, int quantity) {
+                    //     double precio = productos[index].precio;
+                    //     if (quantity > 0) {
+                          
+                    //       // int idProducto = productos[index].id;
+                    //       // String nombre = productos[index].nombre;
+                    //       // double precio = productos[index].precio;
+                    //       // addToCart(productos[index], idProducto, nombre, quantity, precio);
+                    //       addToCart(
+                    //           productosFiltrados[index].id, cantidad, precio);
+                    //       print(quantity);
+                    //       print(carrito);
+                    //       setState(() {
+                    //         cantidadSeleccionada[productId] = carrito[productId] ?? 0;
+                    //       });
+                    //     } else {
+                    //       removeFromCart(
+                    //           productosFiltrados[index].id, cantidad, precio);
+                    //     }
+                    //   },
+                    // ),
                   ),
                 );
               },

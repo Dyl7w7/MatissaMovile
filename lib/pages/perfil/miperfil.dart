@@ -3,7 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:matissamovile/pages/Citas/pageCitas.dart';
+import 'package:matissamovile/pages/perfil/menu.dart';
 import 'package:matissamovile/pages/widget/AppBar.dart';
 import 'package:matissamovile/pages/widget/drawer.dart';
 
@@ -84,93 +84,93 @@ class _PerfilPageState extends State<PerfilPage> {
                     key: _formKey,
                     child: Column(
                       children: <Widget>[
-                        Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: TextFormField(
-                              controller: _nombresController,
-                              readOnly: true,
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.quicksand().fontFamily,
-                              ),
-                              decoration: InputDecoration(
-                                  hintText: 'Nombres',
-                                  hintStyle: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Quicksand-SemiBold'),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(35)),
-                                  filled: true),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor digite el nombre';
-                                }
-                                return null;
-                              },
-                            )),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: TextFormField(
-                              controller: _apellidosController,
-                              readOnly: true,
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.quicksand().fontFamily,
-                              ),
-                              decoration: InputDecoration(
-                                  hintText: 'Apellidos',
-                                  hintStyle: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Quicksand-SemiBold'),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(35)),
-                                  filled: true),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor digite el apellido';
-                                }
-                                return null;
-                              },
-                            )),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: TextFormField(
-                              controller: _direccionController,
-                              readOnly: true,
-                              style: TextStyle(
-                                fontFamily: GoogleFonts.quicksand().fontFamily,
-                              ),
-                              decoration: InputDecoration(
-                                  hintText: 'Dirección',
-                                  hintStyle: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Quicksand-SemiBold'),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          width: 0, style: BorderStyle.none),
-                                      borderRadius: BorderRadius.circular(35)),
-                                  filled: true),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor digite su dirección';
-                                }
-                                return null;
-                              },
-                            )),
+                        // Padding(
+                        //     padding: const EdgeInsets.only(top: 15),
+                        //     child: TextFormField(
+                        //       controller: _nombresController,
+                        //       readOnly: true,
+                        //       style: TextStyle(
+                        //         fontFamily: GoogleFonts.quicksand().fontFamily,
+                        //       ),
+                        //       decoration: InputDecoration(
+                        //           hintText: 'Nombres',
+                        //           hintStyle: const TextStyle(
+                        //               fontWeight: FontWeight.w600,
+                        //               fontFamily: 'Quicksand-SemiBold'),
+                        //           focusedBorder: OutlineInputBorder(
+                        //               borderSide: const BorderSide(
+                        //                   width: 0, style: BorderStyle.none),
+                        //               borderRadius: BorderRadius.circular(20)),
+                        //           enabledBorder: OutlineInputBorder(
+                        //               borderSide: const BorderSide(
+                        //                   width: 0, style: BorderStyle.none),
+                        //               borderRadius: BorderRadius.circular(35)),
+                        //           filled: true),
+                        //       validator: (value) {
+                        //         if (value == null || value.isEmpty) {
+                        //           return 'Por favor digite el nombre';
+                        //         }
+                        //         return null;
+                        //       },
+                        //     )),
+                        // Padding(
+                        //     padding: const EdgeInsets.only(top: 15),
+                        //     child: TextFormField(
+                        //       controller: _apellidosController,
+                        //       readOnly: true,
+                        //       style: TextStyle(
+                        //         fontFamily: GoogleFonts.quicksand().fontFamily,
+                        //       ),
+                        //       decoration: InputDecoration(
+                        //           hintText: 'Apellidos',
+                        //           hintStyle: const TextStyle(
+                        //               fontWeight: FontWeight.w600,
+                        //               fontFamily: 'Quicksand-SemiBold'),
+                        //           focusedBorder: OutlineInputBorder(
+                        //               borderSide: const BorderSide(
+                        //                   width: 0, style: BorderStyle.none),
+                        //               borderRadius: BorderRadius.circular(20)),
+                        //           enabledBorder: OutlineInputBorder(
+                        //               borderSide: const BorderSide(
+                        //                   width: 0, style: BorderStyle.none),
+                        //               borderRadius: BorderRadius.circular(35)),
+                        //           filled: true),
+                        //       validator: (value) {
+                        //         if (value == null || value.isEmpty) {
+                        //           return 'Por favor digite el apellido';
+                        //         }
+                        //         return null;
+                        //       },
+                        //     )),
+                        // Padding(
+                        //     padding: const EdgeInsets.only(top: 15),
+                        //     child: TextFormField(
+                        //       controller: _direccionController,
+                        //       readOnly: true,
+                        //       style: TextStyle(
+                        //         fontFamily: GoogleFonts.quicksand().fontFamily,
+                        //       ),
+                        //       decoration: InputDecoration(
+                        //           hintText: 'Dirección',
+                        //           hintStyle: const TextStyle(
+                        //               fontWeight: FontWeight.w600,
+                        //               fontFamily: 'Quicksand-SemiBold'),
+                        //           focusedBorder: OutlineInputBorder(
+                        //               borderSide: const BorderSide(
+                        //                   width: 0, style: BorderStyle.none),
+                        //               borderRadius: BorderRadius.circular(20)),
+                        //           enabledBorder: OutlineInputBorder(
+                        //               borderSide: const BorderSide(
+                        //                   width: 0, style: BorderStyle.none),
+                        //               borderRadius: BorderRadius.circular(35)),
+                        //           filled: true),
+                        //       validator: (value) {
+                        //         if (value == null || value.isEmpty) {
+                        //           return 'Por favor digite su dirección';
+                        //         }
+                        //         return null;
+                        //       },
+                        //     )),
                         // Padding(
                         //   padding: const EdgeInsets.only(top: 15),
                         //   child: Row(
@@ -421,7 +421,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => PageCitas(
+                                            builder: (context) => MenuPage(
                                                   clienteId: widget.clienteId,
                                                   clienteCorreo:
                                                       widget.clienteCorreo,

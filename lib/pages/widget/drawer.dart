@@ -4,7 +4,6 @@ import 'package:matissamovile/pages/Citas/pageCitas.dart';
 import 'package:matissamovile/pages/Login/login.dart';
 import 'package:matissamovile/pages/Pedidos/pagePedido.dart';
 import 'package:matissamovile/pages/Productos/pageProductos.dart';
-import 'package:matissamovile/pages/Register/prueba.dart';
 import 'package:matissamovile/pages/perfil/miperfil.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -71,6 +70,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               color: Colors.white,
                             ),
                           ),
+                          
                         ),
                       ],
                     ),

@@ -3,8 +3,8 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:matissamovile/pages/Citas/pageCitas.dart';
 import 'package:matissamovile/pages/Register/register.dart';
+import 'package:matissamovile/pages/perfil/menu.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
@@ -87,7 +87,7 @@ class _MyLoginState extends State<MyLogin> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => PageCitas(
+                  builder: (context) => MenuPage(
                       clienteId: idCliente,
                       clienteCorreo: "$storedCorreo",
                       clienteContrasena: "$storedPassword")),

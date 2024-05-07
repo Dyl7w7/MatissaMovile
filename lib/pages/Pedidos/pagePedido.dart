@@ -61,8 +61,8 @@ class PagePedido extends StatefulWidget {
 class _PagePedidoState extends State<PagePedido> {
   bool _isCanceling = false;
   //bool _isDeleting = false;
-  bool _isCreating = false;
   //bool _isEditing = false;
+  bool _loaded = false;
   List<Map<String, dynamic>> productos = [];
   List<Map<String, dynamic>> pedidos = [];
   //late List<DetallePedido> detallePedidos = [];
@@ -85,7 +85,6 @@ class _PagePedidoState extends State<PagePedido> {
 
   @override
   void initState() {
-    _isCreating = false;
     super.initState();
     fetchPedidos();
     //fetchProductos();
@@ -101,13 +100,23 @@ class _PagePedidoState extends State<PagePedido> {
       ),
       body: Column(
         children: [
-          Text(
-            "Mis pedidos",
-            style: TextStyle(
-                fontFamily: GoogleFonts.quicksand().fontFamily,
-                fontSize: 35,
-                fontWeight: FontWeight.bold),
+          Padding(
+            padding: EdgeInsets.all(5.0),
+            child: Text(
+              "Mis pedidos",
+              style: TextStyle(
+                  fontFamily: GoogleFonts.quicksand().fontFamily,
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+            ),
           ),
+          if (!_loaded)
+            Padding(
+              padding: const EdgeInsets
+                  .symmetric(
+                  horizontal: 5),
+              child: CircularProgressIndicator()), // Icono de carga
           Expanded(
               child: ListView.builder(
             itemCount: pedidos.length,
@@ -115,6 +124,8 @@ class _PagePedidoState extends State<PagePedido> {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: ExpansionTileCard(
+                  expandedColor: Color.fromARGB(255, 240, 240, 240),
+                  baseColor: Color.fromARGB(255, 240, 240, 240),
                   title: Row(
                     children: [
                       Icon(
@@ -363,7 +374,6 @@ class _PagePedidoState extends State<PagePedido> {
                         clienteContrasena: widget.clienteContrasena,
                       )));
           setState(() {
-            _isCreating = false;
           });
           //_showModal(context);
         },
@@ -480,11 +490,13 @@ class _PagePedidoState extends State<PagePedido> {
         }
       }
 
+      // Ordenar los pedidos por fecha de manera descendente
+      newPedidos.sort((a, b) => DateTime.parse(b['fechaPedido']).compareTo(DateTime.parse(a['fechaPedido'])));
+
       setState(() {
         pedidos = newPedidos;
+        _loaded = true;
       });
-
-      print('Pedidos: $pedidos');
     } else {
       print('Error: ${response.statusCode}');
     }
