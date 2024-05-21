@@ -116,8 +116,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                       borderRadius: BorderRadius.circular(35)),
                                   filled: true),
                               validator: (value) {
+                                String pattern = r'^[0-9]+$';
+                                RegExp regExp = RegExp(pattern);
                                 if (value!.isEmpty) {
                                   return 'Por favor ingrese su cédula';
+                                } else if (!regExp.hasMatch(value)) {
+                                  return 'La cédula es inválida';
                                 }
                                 return null;
                               },
@@ -213,8 +217,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                       borderRadius: BorderRadius.circular(35)),
                                   filled: true),
                               validator: (value) {
+                                String pattern = r'^[0-9]+$';
+                                RegExp regExp = RegExp(pattern);
                                 if (value == null || value.isEmpty) {
                                   return 'Por favor digite su teléfono';
+                                } else if (!regExp.hasMatch(value)) {
+                                  return 'El teléfono es inválido';
                                 }
                                 return null;
                               },
@@ -536,7 +544,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                     Text(
                                                       register
                                                           ? "Se ha registrado correctamente"
-                                                          : "Error: el correo o el teléfono \n ya estan registrados",
+                                                          : "Error: la cédula o el correo \n ya estan registrados",
                                                       style: TextStyle(
                                                           color: Color.fromARGB(
                                                               255,
