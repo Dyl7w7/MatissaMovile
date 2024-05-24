@@ -808,7 +808,7 @@ Mailer(String correo, String nombre) async {
     ..subject = 'Registro en Matissa'
     ..text = 'Se ha registrado en Matissa correctamente.'
     ..html =
-        "Sr $nombre. Usted se ha registrado correctamente en Matissa el día: ${DateTime.now()}";
+        "$nombre. Usted se ha registrado correctamente en Matissa.";
 
   try {
     final sendReport = await send(message, smtpServer);
