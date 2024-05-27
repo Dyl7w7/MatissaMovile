@@ -140,8 +140,13 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
 
   void removeFromCart(int productId, int quantity, double price) {
     setState(() {
-      quantity--;
-      carrito[productId] = quantity;
+      if (quantity > 0) {
+        quantity--;
+        carrito[productId] = quantity;
+      } else {
+        quantity = 0;
+        carrito[productId] = quantity;
+      }
       // if (totalPedido > 0){
       //   totalPedido -= price * quantity;
       // } else {
