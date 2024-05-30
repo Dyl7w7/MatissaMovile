@@ -34,67 +34,61 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(),
-      drawer: MyDrawer(
-        clienteId: widget.clienteId,
-        clienteCorreo: widget.clienteCorreo,
-        clienteContrasena: widget.clienteContrasena,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(
-              'Bienvenido a Matissa',
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 35,
-                fontFamily: GoogleFonts.quicksand().fontFamily,
-              ),
-            ),
-            if (!_loaded)
-              CircularProgressIndicator(),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 25),
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.cover,
-                height: 190,
-                width: 190, 
-              ),
-            ),
-            
-            if (_loaded)
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                textAlign: TextAlign.center,
-                '$name $lastName, Le damos la bienvenida a la tienda de belleza virtual de Matissa',
+        appBar: MyAppBar(),
+        drawer: MyDrawer(
+          clienteId: widget.clienteId,
+          clienteCorreo: widget.clienteCorreo,
+          clienteContrasena: widget.clienteContrasena,
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                'Bienvenido a Matissa',
                 style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 35,
                   fontFamily: GoogleFonts.quicksand().fontFamily,
-                  fontSize: 16
                 ),
               ),
-            )
-            
-          ],
-        ),
-
-      )
-    );
+              if (!_loaded) CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 25),
+                child: Image.asset(
+                  'assets/logo.png',
+                  fit: BoxFit.cover,
+                  height: 190,
+                  width: 190,
+                ),
+              ),
+              if (_loaded)
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    '$name $lastName, Le damos la bienvenida a la tienda de belleza virtual de Matissa',
+                    style: TextStyle(
+                        fontFamily: GoogleFonts.quicksand().fontFamily,
+                        fontSize: 16),
+                  ),
+                )
+            ],
+          ),
+        ));
   }
 
   Future<void> fetchCliente() async {
     int clienteId = widget.clienteId;
 
-    final String url = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
+    final String url =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
     final String usernameApi = '11173482';
     final String passwordApi = '60-dayfreetrial';
 
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
-    
-    
+
     final response = await http.get(
       //Uri.parse('http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId')
       Uri.parse(url),
@@ -108,7 +102,6 @@ class _MenuPageState extends State<MenuPage> {
         lastName = clienteData['apellidoCliente'] ?? '';
         _loaded = true;
       });
-      print(clienteData);
     }
   }
 }

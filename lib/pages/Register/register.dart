@@ -656,38 +656,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 }
-// Future<void> postData(String cedula, String nombre, String apellido, String direccion, String ciudad, String correo, String telefono, String fechaNacimiento, String password) async {
-//     final url = Uri.parse('https://matissa.onrender.com/api/clientes');
-
-//     final postDataResponse = await http.post(
-//         url,
-//         headers: {'Content-Type': 'application/json'},
-//         body: jsonEncode({
-//           'cedula': cedula,
-//           'nombres': nombre,
-//           'apellidos': apellido,
-//           'telefono': telefono,
-//           'direccion': direccion,
-//           'ciudad': ciudad,
-//           'fechaNacimiento': fechaNacimiento,
-//           'correo': correo,
-//           'contraseña': password,
-//           'estado': 1
-//         }),
-//       );
-//       final data = jsonDecode(postDataResponse.body);
-//       print(data);
-
-//       if (postDataResponse.statusCode == 200) {
-//         // La respuesta fue exitosa
-//         print('Nuevo registro creado: ${postDataResponse.body}');
-//       } else {
-//         // Ocurrió un error al realizar la solicitud POST
-//         print('Error al crear el nuevo registro: ${postDataResponse.statusCode}');
-//       }
-
-//       print("Cédula: $cedula, Nombre: $nombre, Apellido: $apellido, Teléfono: $telefono, Dirección: $direccion, Ciudad: $ciudad, Correo: $correo, Nacimiento: $fechaNacimiento, Contraseña: $password, Estado: 1");
-//   }
 
 String encryptPassword(String password) {
   var bytes = utf8.encode(password); // Convierte la cadena a bytes en UTF-8
@@ -709,7 +677,6 @@ Future<bool> postData(
 ) async {
   // Encriptar contraseña
   String encryptedPassword = encryptPassword(password);
-  print(encryptedPassword); // Imprime la contraseña encriptada
 
   String apiUri = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
   String apiUserUri =
@@ -746,7 +713,7 @@ Future<bool> postData(
     bool cedulaExists =
         existingData.any((recordCed) => recordCed['idCliente'] == cedula);
     if (correoExists || cedulaExists || correoUserExist) {
-      print('El correo o la cédula ya estan registrados');
+      // Correo o cedula ya registrados
       return false;
     } else {
       // Si el registro no existe, realizar la solicitud POST
@@ -769,20 +736,12 @@ Future<bool> postData(
           'estado': 1
         }),
       );
-      final data = jsonDecode(postDataResponse.body);
-      print(data);
-
       if (postDataResponse.statusCode == 200) {
         // La respuesta fue exitosa
-        print('Nuevo registro creado: ${postDataResponse.body}');
         Mailer(correo, nombre);
       } else {
         // Ocurrió un error al realizar la solicitud POST
-        print(
-            'Error al crear el nuevo registro: ${postDataResponse.statusCode}');
       }
-      print(
-          "Nombre: $nombre, Apellido: $apellido, Teléfono: $telefono, Dirección: $direccion, Correo: $correo, Contraseña: $encryptedPassword, Estado: 1");
       return true;
     }
   }
@@ -807,17 +766,14 @@ Mailer(String correo, String nombre) async {
     ..bccRecipients.add(Address('dilanstivel9@gmail.com'))
     ..subject = 'Registro en Matissa'
     ..text = 'Se ha registrado en Matissa correctamente.'
-    ..html =
-        "$nombre. Usted se ha registrado correctamente en Matissa.";
+    ..html = "$nombre. Usted se ha registrado correctamente en Matissa.";
 
   try {
     final sendReport = await send(message, smtpServer);
     print('Message sent: ' + sendReport.toString());
   } on MailerException catch (e) {
-    print('Message not sent.');
-    for (var p in e.problems) {
-      print('Problem: ${p.code}: ${p.msg}');
-    }
+    // No enviado
+    print(e);
   }
 
   var connection = PersistentConnection(smtpServer);

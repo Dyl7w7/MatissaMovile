@@ -313,102 +313,112 @@ class _PerfilPageState extends State<PerfilPage> {
                             child:
                                 CircularProgressIndicator(), // Icono de carga
                           )
-                        else 
-                        Padding(
-                            padding: const EdgeInsets.only(top: 30),
-                            child: SizedBox(
-                              width: 200,
-                              height: 45,
-                              child: ElevatedButton(
-                                  onPressed: _isEditing
-                                      ? null
-                                      : () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      setState(() {
-                                        _isEditing =
-                                            true; // Indica que se está realizando el registro
-                                      });
-                                      String nombres = _nombresController.text;
-                                      String apellidos =
-                                          _apellidosController.text;
-                                      String direccion =
-                                          _direccionController.text;
-                                      String lastPassword =
-                                          _lastPasswordController.text;
-                                      String newPassword =
-                                          _newPasswordController;
-                                      bool validPassword = await putData(
-                                          nombres,
-                                          apellidos,
-                                          direccion,
-                                          lastPassword,
-                                          newPassword);
-                                          setState(() {
-                                            _isEditing =
-                                                false; // Indica que se está realizando el registro
-                                          });
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            const Icon(
-                                              Icons.check_circle,
-                                              color: Color.fromARGB(
-                                                  255, 255, 255, 255),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              validPassword
-                                                  ? "Se ha editado correctamente"
-                                                  : "Contraseña incorrecta",
-                                              style: const TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                  fontFamily:
-                                                      'Quicksand-SemiBold'),
-                                            )
-                                          ],
-                                        ),
-                                        duration:
-                                            const Duration(milliseconds: 2000),
-                                        width: 300,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 10),
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(3.0),
-                                        ),
-                                        backgroundColor: validPassword
-                                            ? const Color.fromARGB(
-                                                255, 12, 195, 106)
-                                            : Colors.red,
-                                      ));
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 10,
-                                    backgroundColor: const Color.fromRGBO(
-                                        60,
-                                        195,
-                                        189,
-                                        1), // background (button) color
-                                    foregroundColor:
-                                        Colors.white, // foreground (text) color
-                                  ),
-                                  child: Text(
-                                    'Editar',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w900,
-                                        fontFamily:
-                                            GoogleFonts.quicksand().fontFamily,
-                                        fontSize: 20),
-                                  )),
-                            )),
+                        else
+                          Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: SizedBox(
+                                width: 200,
+                                height: 45,
+                                child: ElevatedButton(
+                                    onPressed: _isEditing
+                                        ? null
+                                        : () async {
+                                            if (_formKey.currentState!
+                                                .validate()) {
+                                              setState(() {
+                                                _isEditing =
+                                                    true; // Indica que se está realizando el registro
+                                              });
+                                              String nombres =
+                                                  _nombresController.text;
+                                              String apellidos =
+                                                  _apellidosController.text;
+                                              String direccion =
+                                                  _direccionController.text;
+                                              String lastPassword =
+                                                  _lastPasswordController.text;
+                                              String newPassword =
+                                                  _newPasswordController;
+                                              bool validPassword =
+                                                  await putData(
+                                                      nombres,
+                                                      apellidos,
+                                                      direccion,
+                                                      lastPassword,
+                                                      newPassword);
+                                              setState(() {
+                                                _isEditing =
+                                                    false; // Indica que se está realizando el registro
+                                              });
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                content: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    const Icon(
+                                                      Icons.check_circle,
+                                                      color: Color.fromARGB(
+                                                          255, 255, 255, 255),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      validPassword
+                                                          ? "Se ha editado correctamente"
+                                                          : "Contraseña incorrecta",
+                                                      style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              255,
+                                                              255,
+                                                              255),
+                                                          fontFamily:
+                                                              'Quicksand-SemiBold'),
+                                                    )
+                                                  ],
+                                                ),
+                                                duration: const Duration(
+                                                    milliseconds: 2000),
+                                                width: 300,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0,
+                                                        vertical: 10),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          3.0),
+                                                ),
+                                                backgroundColor: validPassword
+                                                    ? const Color.fromARGB(
+                                                        255, 12, 195, 106)
+                                                    : Colors.red,
+                                              ));
+                                            }
+                                          },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 10,
+                                      backgroundColor: const Color.fromRGBO(
+                                          60,
+                                          195,
+                                          189,
+                                          1), // background (button) color
+                                      foregroundColor: Colors
+                                          .white, // foreground (text) color
+                                    ),
+                                    child: Text(
+                                      'Editar',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontFamily: GoogleFonts.quicksand()
+                                              .fontFamily,
+                                          fontSize: 20),
+                                    )),
+                              )),
                         Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: SizedBox(
@@ -418,17 +428,19 @@ class _PerfilPageState extends State<PerfilPage> {
                                   onPressed: _isEditing
                                       ? null
                                       : () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => MenuPage(
-                                                  clienteId: widget.clienteId,
-                                                  clienteCorreo:
-                                                      widget.clienteCorreo,
-                                                  clienteContrasena:
-                                                      widget.clienteContrasena,
-                                                )));
-                                  },
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MenuPage(
+                                                        clienteId:
+                                                            widget.clienteId,
+                                                        clienteCorreo: widget
+                                                            .clienteCorreo,
+                                                        clienteContrasena: widget
+                                                            .clienteContrasena,
+                                                      )));
+                                        },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 10,
                                     backgroundColor: const Color.fromRGBO(0, 0,
@@ -456,14 +468,14 @@ class _PerfilPageState extends State<PerfilPage> {
   Future<void> fetchCliente() async {
     int clienteId = widget.clienteId;
 
-    final String url = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
+    final String url =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
     final String usernameApi = '11173482';
     final String passwordApi = '60-dayfreetrial';
 
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
-    
-    
+
     final response = await http.get(
       //Uri.parse('http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId')
       Uri.parse(url),
@@ -472,7 +484,6 @@ class _PerfilPageState extends State<PerfilPage> {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> clienteData = jsonDecode(response.body);
-      print(clienteData);
       _nombres = clienteData['nombreCliente'] ?? "";
       _apellidos = clienteData['apellidoCliente'] ?? "";
       _direccion = clienteData['direccion'] ?? "";
@@ -494,38 +505,38 @@ class _PerfilPageState extends State<PerfilPage> {
       String lastPassword, String newPassword) async {
     // Encriptar nueva contraseña
     String encryptedPassword = encryptPassword(newPassword);
-    print(encryptedPassword); // Imprime la contraseña encriptada
     // Encriptar contraseña actual
     String actualEncryptedPassword = encryptPassword(lastPassword);
-    print(actualEncryptedPassword); // Imprime la contraseña encriptada
 
     int clienteId = widget.clienteId;
-    String apiUri = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
+    String apiUri =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
     final String usernameApi = '11173482';
     final String passwordApi = '60-dayfreetrial';
-    final String basicAuth = 'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
 
-    print(
-        'Datos formulario: $nombres, $apellidos, $direccion, $lastPassword, $encryptedPassword');
     final getDataResponse = await http.get(
       Uri.parse(apiUri),
       headers: <String, String>{'authorization': basicAuth},
     );
     if (getDataResponse.statusCode == 200) {
       Map<String, dynamic> getPassword = jsonDecode(getDataResponse.body);
-      print('Datos del Cliente: $getPassword');
       if (getPassword['contraseña'] == actualEncryptedPassword) {
-        print('Contraseña válida AAAAAAAAAAAAAAAAAAAAAAAA');
         // Map<String, dynamic> requestBody = {
         //   'nombres': nombres,
         //   'apellidos': apellidos,
         //   'direccion': direccion,
         //   'contraseña': newPassword
         // };
-        String apiUriPut = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/$clienteId';
+        String apiUriPut =
+            'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/$clienteId';
         final putResponse = await http.put(
           Uri.parse(apiUriPut),
-          headers: <String, String>{'authorization': basicAuth, 'Content-Type': 'application/json'},
+          headers: <String, String>{
+            'authorization': basicAuth,
+            'Content-Type': 'application/json'
+          },
           body: jsonEncode({
             "idCliente": clienteId,
             "nombreCliente": getPassword['nombreCliente'],
@@ -536,25 +547,22 @@ class _PerfilPageState extends State<PerfilPage> {
             "nacimiento": getPassword['nacimiento'],
             "direccion": getPassword['direccion'],
             "estado": 1
-            
           }),
         );
         if (putResponse.statusCode == 200) {
-          print('Cliente actualizado');
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => PerfilPage(
-              clienteId: widget.clienteId,
-              clienteCorreo: widget.clienteCorreo,
-              clienteContrasena: widget.clienteContrasena,
-            )),
+            MaterialPageRoute(
+                builder: (context) => PerfilPage(
+                      clienteId: widget.clienteId,
+                      clienteCorreo: widget.clienteCorreo,
+                      clienteContrasena: widget.clienteContrasena,
+                    )),
           );
           return true;
         } else {
-          print('Error al actualizar: ${putResponse.statusCode}');
           return false;
         }
       } else {
-        print('Contraseña incorrecta');
         return false;
       }
     }

@@ -22,7 +22,6 @@ class _MyLoginState extends State<MyLogin> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _validateUserName(String? value) {
-    print("entre a la función");
     if (value == null || value.isEmpty) {
       return "Por favor, ingrese un correo";
     }
@@ -30,7 +29,6 @@ class _MyLoginState extends State<MyLogin> {
   }
 
   String? _validatePassword(String? value) {
-    print("entre a la función");
     if (value == null || value.isEmpty) {
       return "Por favor ingrese una contraseña";
     }
@@ -51,9 +49,8 @@ class _MyLoginState extends State<MyLogin> {
     if (correo == "" || password == "") {
       _showErrorDialog(context, 'Por favor, rellene los campos');
     } else {
-      print("entre a la función");
-
-      final String url = 'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
+      final String url =
+          'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
       final String usernameApi = '11173482';
       final String passwordApi = '60-dayfreetrial';
 
@@ -69,7 +66,9 @@ class _MyLoginState extends State<MyLogin> {
       if (response.statusCode == 200) {
         final List<dynamic> userData = jsonDecode(response.body);
 
-        final usuario = userData.firstWhere((usuario) => usuario['correo'] == correo, orElse: () => null);
+        final usuario = userData.firstWhere(
+            (usuario) => usuario['correo'] == correo,
+            orElse: () => null);
 
         if (usuario != null) {
           final String storedCorreo = usuario['correo'];
@@ -77,12 +76,10 @@ class _MyLoginState extends State<MyLogin> {
           final int idCliente = usuario['idCliente'];
 
           String encryptedPassword = encryptPassword(password);
-          print(encryptedPassword); // Imprime la contraseña encriptada
 
           if (encryptedPassword == storedPassword) {
             // Puedes hacer lo que necesitas con el ID y otros datos
             // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
-            print('Usuario ID: $idCliente');
 
             Navigator.pushReplacement(
               context,
@@ -206,7 +203,6 @@ class _MyLoginState extends State<MyLogin> {
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        print("Vacio pai");
                         return 'Por favor ingrese una contraseña';
                       }
                       return null;
@@ -215,54 +211,51 @@ class _MyLoginState extends State<MyLogin> {
                 ),
 
                 const SizedBox(height: 30),
-                 if (_isLogging) // Mostrar el icono de carga si _isCreating es true
+                if (_isLogging) // Mostrar el icono de carga si _isCreating es true
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child:
-                        CircularProgressIndicator(), // Icono de carga
+                    child: CircularProgressIndicator(), // Icono de carga
                   )
-                else 
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          20), // Cambiar el radio del borde aquí
+                else
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            20), // Cambiar el radio del borde aquí
+                      ),
+                      foregroundColor: const Color.fromARGB(179, 129, 127, 127),
+                      backgroundColor: const Color.fromARGB(255, 255, 252, 252),
+                      minimumSize: const Size(
+                          140, 35), // Cambiar el tamaño mínimo del botón aquí
                     ),
-                    foregroundColor: const Color.fromARGB(179, 129, 127, 127),
-                    backgroundColor: const Color.fromARGB(255, 255, 252, 252),
-                    minimumSize: const Size(
-                        140, 35), // Cambiar el tamaño mínimo del botón aquí
-                  ),
-                  onPressed: _isLogging
-                      ? null
-                      : () async {
-                    setState(() {
-                      _isLogging =
-                          true; // Indica que se está realizando el registro
-                    });
-                    try{
-                      await _login(context);
-                    } catch(e) {
-                      print('Error al enviar ingresar: $e');
-                    }
+                    onPressed: _isLogging
+                        ? null
+                        : () async {
+                            setState(() {
+                              _isLogging =
+                                  true; // Indica que se está realizando el registro
+                            });
+                            try {
+                              await _login(context);
+                            } catch (e) {
+                              return;
+                            }
 
-                    setState(() {
-                      _isLogging = false; // Indica que se está realizando el registro
-                    });
-                    
-                    
-                    
-                  },
-                  child: Text(
-                    'Ingresar',
-                    style: TextStyle(
-                      fontFamily: GoogleFonts.quicksand().fontFamily,
-                      fontSize: 18,
-                      color: const Color.fromARGB(255, 82, 81, 81),
-                      fontWeight: FontWeight.w600,
+                            setState(() {
+                              _isLogging =
+                                  false; // Indica que se está realizando el registro
+                            });
+                          },
+                    child: Text(
+                      'Ingresar',
+                      style: TextStyle(
+                        fontFamily: GoogleFonts.quicksand().fontFamily,
+                        fontSize: 18,
+                        color: const Color.fromARGB(255, 82, 81, 81),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 40), // Espacio de 10 pixels
                 GestureDetector(
                   onTap: () {
@@ -293,13 +286,15 @@ class _MyLoginState extends State<MyLogin> {
                     minimumSize: const Size(
                         140, 35), // Cambiar el tamaño mínimo del botón aquí
                   ),
-                  onPressed: _isLogging ? null : () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
-                        ));
-                  },
+                  onPressed: _isLogging
+                      ? null
+                      : () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterPage(),
+                              ));
+                        },
                   child: Text(
                     'Registrate',
                     style: TextStyle(

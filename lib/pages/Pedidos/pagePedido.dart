@@ -108,15 +108,13 @@ class _PagePedidoState extends State<PagePedido> {
                   fontFamily: GoogleFonts.quicksand().fontFamily,
                   fontSize: 35,
                   fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
             ),
           ),
           if (!_loaded)
             Padding(
-              padding: const EdgeInsets
-                  .symmetric(
-                  horizontal: 5),
-              child: CircularProgressIndicator()), // Icono de carga
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: CircularProgressIndicator()), // Icono de carga
           Expanded(
               child: ListView.builder(
             itemCount: pedidos.length,
@@ -373,8 +371,7 @@ class _PagePedidoState extends State<PagePedido> {
                         clienteCorreo: widget.clienteCorreo,
                         clienteContrasena: widget.clienteContrasena,
                       )));
-          setState(() {
-          });
+          setState(() {});
           //_showModal(context);
         },
       ),
@@ -436,19 +433,13 @@ class _PagePedidoState extends State<PagePedido> {
                     productos['saldoInventario'] + item['cantidadProducto'],
                 'estado': productos['estado']
               }));
-          if (response.statusCode == 204) {
-            print(
-                'Cantidad reestablecida: ${item['cantidadProducto']}, ${productos['nombreProducto']}');
-          }
+          if (response.statusCode == 204) {}
         }
       }
 
       if (response.statusCode == 204) {
-        print('Estado actualizado: ${response.body}');
         return true;
-      } else {
-        print('Error: ${response.statusCode}');
-      }
+      } else {}
     }
     return false;
   }
@@ -491,15 +482,14 @@ class _PagePedidoState extends State<PagePedido> {
       }
 
       // Ordenar los pedidos por fecha de manera descendente
-      newPedidos.sort((a, b) => DateTime.parse(b['fechaPedido']).compareTo(DateTime.parse(a['fechaPedido'])));
+      newPedidos.sort((a, b) => DateTime.parse(b['fechaPedido'])
+          .compareTo(DateTime.parse(a['fechaPedido'])));
 
       setState(() {
         pedidos = newPedidos;
         _loaded = true;
       });
-    } else {
-      print('Error: ${response.statusCode}');
-    }
+    } else {}
   }
 
   Future<List<Map<String, dynamic>>> fetchDetallesPedido(int idPedido) async {
@@ -530,7 +520,6 @@ class _PagePedidoState extends State<PagePedido> {
       }
       return detalles;
     } else {
-      print('Error: ${response.statusCode}');
       return [];
     }
   }
@@ -559,74 +548,9 @@ class _PagePedidoState extends State<PagePedido> {
       }
       return producto;
     } else {
-      print('Error: ${response.statusCode}');
       return [];
     }
   }
-
-  // Future<void> fetchPedidos() async {
-  //   final String uriPedidos = 'https://http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos';
-  //   final String usernameApi = '11173482';
-  //   final String passwordApi = '60-dayfreetrial';
-  //   final String basicAuth = 'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
-  //   final response = await http.get(
-  //     Uri.parse(uriPedidos),
-  //     headers: <String, String>{'authorization': basicAuth, 'Content-Type': 'application/json'},
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     List<dynamic> jsonData = jsonDecode(response.body);
-  //     List<Map<String, dynamic>> newPedidos = [];
-  //     for (var item in jsonData) {
-  //       if (item['idCliente'] == widget.clienteId) {
-  //         newPedidos.add({
-  //           'idPedido': item['idPedido'],
-  //           'idCliente': item['idCliente'],
-  //           'fechaPedido': item['fechaPedido'],
-  //           'precioTotalPedido': item['precioTotalPedido'],
-  //           'estado': item['estado'],
-  //         });
-  //       }
-  //     }
-
-  //     setState(() {
-  //       pedidos = newPedidos;
-  //     });
-
-  //     print('Pedidos: $pedidos');
-  //   } else {
-  //     print('Error: ${response.statusCode}');
-  //   }
-  // }
-
-//   Future<void> fetchProductos() async {
-//     final response =
-//         await http.get(Uri.parse('https://http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos'));
-
-//     if (response.statusCode == 200) {
-//       List<dynamic> jsonData = jsonDecode(response.body);
-//       List<Map<String, dynamic>> newData = [];
-//       for (var item in jsonData) {
-//         newData.add({
-//           'id': item['idPedido'],
-//           'idCliente': item['idCliente'],
-//           'fechaPedido': item['fechaPedido'],
-//           'precioTotalPedido': item['precioTotalPedido'],
-//           'estado': item['estado']
-//         });
-//       }
-
-//       setState(() {
-//         productos = newData;
-//       });
-
-//       print('Servicios: $productos');
-//     } else {
-//       print('Error: ${response.statusCode}');
-//     }
-//   }
-
-// }
 
   void _showExitoDialog(BuildContext context, String errorMessage) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(

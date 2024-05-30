@@ -11,16 +11,14 @@ class Product {
   final String nombre;
   final double precio;
 
-  Product(
-      {required this.id,
-      required this.nombre,
-      required this.precio});
+  Product({required this.id, required this.nombre, required this.precio});
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-        id: json['idProducto'],
-        nombre: json['nombreProducto'],
-        precio: json['precioVenta'].toDouble(),);
+      id: json['idProducto'],
+      nombre: json['nombreProducto'],
+      precio: json['precioVenta'].toDouble(),
+    );
   }
 }
 
@@ -53,103 +51,100 @@ class _PageProductosState extends State<PageProductos> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(),
-      drawer: MyDrawer(
-        clienteId: widget.clienteId,
-        clienteCorreo: widget.clienteCorreo,
-        clienteContrasena: widget.clienteContrasena,
-      ),
-      body: Column(
-        children: [
-          Padding(
-          padding: EdgeInsets.all(0.0),
-          child: Container(
-            color: Color.fromARGB(255, 255, 255, 255), // Color de fondo del título
-            child: ListTile(
-              title: Text(
-                "Productos disponibles",
-                style: TextStyle(
-                  fontFamily: GoogleFonts.quicksand().fontFamily,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black, // Color del texto del título
-                ),  
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
+        appBar: MyAppBar(),
+        drawer: MyDrawer(
+          clienteId: widget.clienteId,
+          clienteCorreo: widget.clienteCorreo,
+          clienteContrasena: widget.clienteContrasena,
         ),
-          if(!_loaded)
-          CircularProgressIndicator(),
-          if(_loaded)
-          Padding(
-            padding: EdgeInsets.all(0.0),
-            child: Container(
-              color: Color.fromARGB(255, 255, 255, 255), // Color de fondo del título
-              child: TextField(
-                controller: _controller,
-                onChanged: (value) {
-                  setState(() {
-                    // Filtrar la lista de productos según el término de búsqueda
-                    productosFiltrados = productos
-                        .where((producto) => producto.nombre
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
-                        .toList();
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Buscar producto',
-                  prefixIcon: Icon(Icons.search),
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(0.0),
+              child: Container(
+                color: Color.fromARGB(
+                    255, 255, 255, 255), // Color de fondo del título
+                child: ListTile(
+                  title: Text(
+                    "Productos disponibles",
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black, // Color del texto del título
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: productosFiltrados.length,
-              itemBuilder: (BuildContext ctx, index) {
-                return Container(
-                  margin: EdgeInsets.all(6),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        tileColor: Color.fromARGB(255, 240, 240, 240),
-                        title: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.add_shopping_cart,
-                                color: Color.fromARGB(255, 0, 193, 207),
+            if (!_loaded) CircularProgressIndicator(),
+            if (_loaded)
+              Padding(
+                padding: EdgeInsets.all(0.0),
+                child: Container(
+                  color: Color.fromARGB(
+                      255, 255, 255, 255), // Color de fondo del título
+                  child: TextField(
+                    controller: _controller,
+                    onChanged: (value) {
+                      setState(() {
+                        // Filtrar la lista de productos según el término de búsqueda
+                        productosFiltrados = productos
+                            .where((producto) => producto.nombre
+                                .toLowerCase()
+                                .contains(value.toLowerCase()))
+                            .toList();
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Buscar producto',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                ),
+              ),
+            Expanded(
+                child: ListView.builder(
+                    itemCount: productosFiltrados.length,
+                    itemBuilder: (BuildContext ctx, index) {
+                      return Container(
+                          margin: EdgeInsets.all(6),
+                          child: Column(children: [
+                            ListTile(
+                              tileColor: Color.fromARGB(255, 240, 240, 240),
+                              title: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add_shopping_cart,
+                                      color: Color.fromARGB(255, 0, 193, 207),
+                                      size: 30,
+                                    ),
+                                    Text(
+                                      '${productosFiltrados[index].nombre}',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              //subtitle: Text('\$ ${productos[index].precio.toStringAsFixed(2)}'),
+                              subtitle: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text(
+                                  ' Precio venta: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}',
+                                ),
+                              ),
+                              trailing: Icon(
+                                Icons.check_circle,
+                                color: Color.fromARGB(255, 0, 207, 17),
                                 size: 30,
                               ),
-                              Text('${productosFiltrados[index].nombre}',),
-                            ],
-                          ),
-                        ),
-                        //subtitle: Text('\$ ${productos[index].precio.toStringAsFixed(2)}'),
-                        subtitle: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Text(
-                              ' Precio venta: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}',
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.check_circle,
-                          color: Color.fromARGB(255, 0, 207, 17),
-                          size: 30,
-                        ),
-                      ),
-                    ]
-                  )
-                );
-              }
-            )
-          )
-        ],
-      )
-    );
+                            ),
+                          ]));
+                    }))
+          ],
+        ));
   }
 
   Future<void> fetchProductos() async {
@@ -171,7 +166,8 @@ class _PageProductosState extends State<PageProductos> {
       List<dynamic> jsonData = jsonDecode(response.body);
       List<Product> newData = [];
       for (var item in jsonData) {
-        if(item['estado'] == 1 /*|| item['estado'] == 2 || item['estado'] == 3*/){
+        if (item['estado'] ==
+            1 /*|| item['estado'] == 2 || item['estado'] == 3*/) {
           newData.add(Product.fromJson(item));
         }
       }
@@ -181,10 +177,6 @@ class _PageProductosState extends State<PageProductos> {
         productosFiltrados = newData;
         _loaded = true;
       });
-
-      print('Productos: $productos');
-    } else {
-      print('Error: ${response.statusCode}');
-    }
+    } else {}
   }
 }

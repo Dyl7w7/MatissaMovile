@@ -124,9 +124,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
         productosFiltrados = newData;
         _loaded = true;
       });
-    } else {
-      print('Error: ${response.statusCode}');
-    }
+    } else {}
   }
 
   void addToCart(int id, int quantity, double price) {
@@ -135,7 +133,6 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
       carrito[id] = quantity;
       // totalPedido += price;
     });
-    print(carrito);
   }
 
   void removeFromCart(int productId, int quantity, double price) {
@@ -153,7 +150,6 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
       //   totalPedido = 0;
       // }
     });
-    print(carrito);
   }
 
   void obtenerTotalPedido() {
@@ -170,8 +166,6 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
               cantidad: cantidadEnCarrito,
               subtotal: subtotal));
           totalPedido += subtotal;
-          print(
-              'Producto añadido al carrito: ID: ${producto.id}. ${producto.nombre}, Cantidad: ${producto.nombre} Subtotal: $subtotal');
         } else {
           _showErrorDialog(
               context, producto.nombre, 'No tenemos suficientes productos');
@@ -180,26 +174,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
           });
         }
       }
-
-      //   carrito.forEach((key, value) {
-      //   print('ID: $key, Cantidad: $value');
-      //   if (productos[i].id == key){
-      //     String nombreProducto = productos[i].nombre;
-      //     if (productos[i].cantidad >= value){
-      //       subtotal = productos[i].precio * value;
-      //       carrito2.add(
-      //         Producto(idProducto: key, nombreProducto: nombreProducto, cantidad: value, subtotal: subtotal)
-      //       );
-      //       totalPedido += subtotal;
-      //       print(totalPedido);
-      //     } else {
-      //       _showErrorDialog(context, nombreProducto, 'No tenemos suficientes productos');
-      //     }
-      //   }
-      //   i++;
-      // });
     }
-    print('Total del pedido: $totalPedido');
   }
 
   Future<bool> cart() async {
@@ -228,15 +203,13 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
     );
     if (postPedidoApi.statusCode == 200) {
       // La respuesta fue exitosa
-      print('Nuevo pedido creado: ${postPedidoApi.body}');
+
       success = true;
     } else {
       // Ocurrió un error al realizar la solicitud POST
-      print('Error al crear el nuevo pedido: ${postPedidoApi.statusCode}');
+
       success = false;
     }
-    print(
-        "idPedido: ${idNewPedido + 1}, idCliente: ${widget.clienteId}, fechaPedido: $fechaFormat, precioTotalPedido: $totalPedido, Estado: 1");
 
     final String urlDetallePedidos =
         'http://dylanbolivar1-001-site1.ftempurl.com/api/detallePedidos';
@@ -286,29 +259,18 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
               "estado": getProducto['estado']
             }));
         if (putProductoApi.statusCode == 204) {
-          print(
-              'Se restaron los productos: ${getProducto['nombreProducto']}, cantidad: ${putCantidad}');
-        } else {
-          print('Error al actualizar producto ${putProductoApi.statusCode}');
-        }
-      } else {
-        print('Error al obtener productos: ${getProductoApi.statusCode}');
-      }
+        } else {}
+      } else {}
 
-      final data = jsonDecode(postDetallePedidoApi.body);
-      print(data);
       if (postDetallePedidoApi.statusCode == 200) {
         // La respuesta fue exitosa
-        print('Nuevo detalle del pedido creado: ${postDetallePedidoApi.body}');
+
         success = true;
       } else {
         // Ocurrió un error al realizar la solicitud POST
-        print(
-            'Error al crear el nuevo pedido: ${postDetallePedidoApi.statusCode}');
+
         success = false;
       }
-      print(
-          "idDetallePedido: ${idDetallePedido + 1}, idProducto: ${carrito2[i].idProducto}, idPedido: $idPedido, cantidad: ${carrito2[i].cantidad}, precioUnitario: ${carrito2[i].subtotal}");
     }
     setState(() {
       _isCreating = false;
@@ -417,26 +379,6 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
         ),
         backgroundColor: Colors.red));
   }
-  // void addToCart(Product product, int idProduct, String nombre, int quantity, double precioProduct) {
-  //   setState(() {
-  //     carrito[product.id] = idProduct;
-  //     print(idProduct);
-  //     print(nombre);
-  //     print(precioProduct);
-  //     print(quantity);
-  //     double subtotal = precioProduct * quantity;
-  //     carrito2.add(
-  //       Producto(idProducto: idProduct, nombreProducto: nombre, precio: precioProduct, cantidad: quantity, subtotal: subtotal)
-  //     );
-  //   });
-  //   print(carrito2);
-  // }
-
-  void createOrder() {
-    // Aquí puedes implementar la lógica para enviar los detalles del pedido al servidor
-    // Puedes acceder a los productos seleccionados desde el mapa "carrito"
-    // Realizar una solicitud POST para enviar los detalles del pedido al servidor
-  }
 
   void _showCreandoDialog(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -531,9 +473,6 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                 final int productId = productosFiltrados[index].id;
                 int cantidad = carrito[productId] ?? 0;
 
-                print('ID: $productId');
-                print('Cant: $cantidad');
-
                 return Container(
                   margin: EdgeInsets.all(6),
                   child: ListTile(
@@ -604,30 +543,6 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                         ),
                       ],
                     ),
-                    // QuantitySelector(
-                    //   initialQuantity: cantidad,
-                    //   productoId: productId,
-                    //   onSelected: (int productoId, int quantity) {
-                    //     double precio = productos[index].precio;
-                    //     if (quantity > 0) {
-
-                    //       // int idProducto = productos[index].id;
-                    //       // String nombre = productos[index].nombre;
-                    //       // double precio = productos[index].precio;
-                    //       // addToCart(productos[index], idProducto, nombre, quantity, precio);
-                    //       addToCart(
-                    //           productosFiltrados[index].id, cantidad, precio);
-                    //       print(quantity);
-                    //       print(carrito);
-                    //       setState(() {
-                    //         cantidadSeleccionada[productId] = carrito[productId] ?? 0;
-                    //       });
-                    //     } else {
-                    //       removeFromCart(
-                    //           productosFiltrados[index].id, cantidad, precio);
-                    //     }
-                    //   },
-                    // ),
                   ),
                 );
               },
@@ -744,9 +659,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                                           },
                                         );
                                       }
-                                    } catch (e) {
-                                      print(e);
-                                    }
+                                    } catch (e) {}
                                   },
                             child: const Text("Aceptar")),
                         TextButton(
