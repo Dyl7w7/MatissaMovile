@@ -49,23 +49,36 @@ class _MyLoginState extends State<MyLogin> {
     if (correo == "" || password == "") {
       _showErrorDialog(context, 'Por favor, rellene los campos');
     } else {
-      final String url =
+      final String urlCliente =
           'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
+      final String urlUser =
+          'http://dylanbolivar1-001-site1.ftempurl.com/api/usuarios';
+
       final String usernameApi = '11173482';
       final String passwordApi = '60-dayfreetrial';
 
       final String basicAuth =
           'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
 
-      final response = await http.get(
+      final responseCliente = await http.get(
         //Uri.parse('dylanbolivar1-001-site1.ftempurl.com/api/clientes')
-        Uri.parse(url),
+        Uri.parse(urlCliente),
         headers: <String, String>{'authorization': basicAuth},
       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> userData = jsonDecode(response.body);
+      final responseUser = await http.get(
+        //Uri.parse('dylanbolivar1-001-site1.ftempurl.com/api/clientes')
+        Uri.parse(urlUser),
+        headers: <String, String>{'authorization': basicAuth},
+      );
 
+      if (responseCliente.statusCode == 200 && responseUser.statusCode == 200) {
+        final List<dynamic> clientData = jsonDecode(responseCliente.body);
+        final List<dynamic> userData = jsonDecode(responseUser.body);
+
+        final cliente = clientData.firstWhere(
+            (cliente) => cliente['correo'] == correo,
+            orElse: () => null);
         final usuario = userData.firstWhere(
             (usuario) => usuario['correo'] == correo,
             orElse: () => null);
@@ -73,7 +86,31 @@ class _MyLoginState extends State<MyLogin> {
         if (usuario != null) {
           final String storedCorreo = usuario['correo'];
           final String storedPassword = usuario['contraseña'];
-          final int idCliente = usuario['idCliente'];
+          final int idCliente = usuario['idUsuario'];
+
+          String encryptedPassword = encryptPassword(password);
+
+          if (encryptedPassword == storedPassword) {
+            // Puedes hacer lo que necesitas con el ID y otros datos
+            // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MenuPage(
+                        clienteId: idCliente,
+                        clienteCorreo: "$storedCorreo",
+                        clienteContrasena: "$storedPassword",
+                        clientOrUser: 0,
+                      )),
+            );
+          } else {
+            _showErrorDialog(context, 'Contraseña incorrecta');
+          }
+        } else if (cliente != null) {
+          final String storedCorreo = cliente['correo'];
+          final String storedPassword = cliente['contraseña'];
+          final int idCliente = cliente['idCliente'];
 
           String encryptedPassword = encryptPassword(password);
 
@@ -87,7 +124,8 @@ class _MyLoginState extends State<MyLogin> {
                   builder: (context) => MenuPage(
                       clienteId: idCliente,
                       clienteCorreo: "$storedCorreo",
-                      clienteContrasena: "$storedPassword")),
+                      clienteContrasena: "$storedPassword",
+                      clientOrUser: 1)),
             );
           } else {
             _showErrorDialog(context, 'Contraseña incorrecta');
@@ -96,10 +134,15 @@ class _MyLoginState extends State<MyLogin> {
           _showErrorDialog(context, 'Usuario no encontrado');
         }
       } else {
-        final dynamic responseData = json.decode(response.body);
-        final errorMessage =
-            responseData['message'] ?? 'Error de inicio de sesión';
-        _showErrorDialog(context, errorMessage);
+        final dynamic responseDataCliente = json.decode(responseCliente.body);
+        final errorMessageCliente =
+            responseDataCliente['message'] ?? 'Error de inicio de sesión';
+        _showErrorDialog(context, errorMessageCliente);
+
+        final dynamic responseDataUser = json.decode(responseUser.body);
+        final errorMessageUser =
+            responseDataUser['message'] ?? 'Error de inicio de sesión';
+        _showErrorDialog(context, errorMessageUser);
       }
     }
   }

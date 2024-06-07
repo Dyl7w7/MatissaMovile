@@ -48,11 +48,13 @@ class PagePedido extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
+  final int clientOrUser;
   const PagePedido(
       {super.key,
       required this.clienteId,
       required this.clienteCorreo,
-      required this.clienteContrasena});
+      required this.clienteContrasena,
+      required this.clientOrUser});
 
   @override
   State<PagePedido> createState() => _PagePedidoState();
@@ -94,10 +96,10 @@ class _PagePedidoState extends State<PagePedido> {
     return Scaffold(
       appBar: MyAppBar(),
       drawer: MyDrawer(
-        clienteId: widget.clienteId,
-        clienteCorreo: widget.clienteCorreo,
-        clienteContrasena: widget.clienteContrasena,
-      ),
+          clienteId: widget.clienteId,
+          clienteCorreo: widget.clienteCorreo,
+          clienteContrasena: widget.clienteContrasena,
+          clientOrUser: widget.clientOrUser),
       body: Column(
         children: [
           Padding(
@@ -266,13 +268,14 @@ class _PagePedidoState extends State<PagePedido> {
                                                                   context,
                                                                   MaterialPageRoute(
                                                                       builder: (context) => PagePedido(
-                                                                            clienteId:
-                                                                                widget.clienteId,
-                                                                            clienteCorreo:
-                                                                                widget.clienteCorreo,
-                                                                            clienteContrasena:
-                                                                                widget.clienteContrasena,
-                                                                          )));
+                                                                          clienteId: widget
+                                                                              .clienteId,
+                                                                          clienteCorreo: widget
+                                                                              .clienteCorreo,
+                                                                          clienteContrasena: widget
+                                                                              .clienteContrasena,
+                                                                          clientOrUser:
+                                                                              widget.clientOrUser)));
                                                             }
                                                           },
                                                     child:
@@ -367,10 +370,10 @@ class _PagePedidoState extends State<PagePedido> {
               context,
               MaterialPageRoute(
                   builder: (context) => PageDetallePedido(
-                        clienteId: widget.clienteId,
-                        clienteCorreo: widget.clienteCorreo,
-                        clienteContrasena: widget.clienteContrasena,
-                      )));
+                      clienteId: widget.clienteId,
+                      clienteCorreo: widget.clienteCorreo,
+                      clienteContrasena: widget.clienteContrasena,
+                      clientOrUser: widget.clientOrUser)));
           setState(() {});
           //_showModal(context);
         },

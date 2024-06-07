@@ -9,11 +9,13 @@ class MenuPage extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
+  final int clientOrUser;
   const MenuPage(
       {Key? key,
       required this.clienteId,
       required this.clienteCorreo,
-      required this.clienteContrasena})
+      required this.clienteContrasena,
+      required this.clientOrUser})
       : super(key: key);
 
   @override
@@ -36,10 +38,10 @@ class _MenuPageState extends State<MenuPage> {
     return Scaffold(
         appBar: MyAppBar(),
         drawer: MyDrawer(
-          clienteId: widget.clienteId,
-          clienteCorreo: widget.clienteCorreo,
-          clienteContrasena: widget.clienteContrasena,
-        ),
+            clienteId: widget.clienteId,
+            clienteCorreo: widget.clienteCorreo,
+            clienteContrasena: widget.clienteContrasena,
+            clientOrUser: widget.clientOrUser),
         body: Padding(
           padding: EdgeInsets.all(8.0),
           child: Column(

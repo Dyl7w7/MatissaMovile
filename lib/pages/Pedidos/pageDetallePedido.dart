@@ -70,11 +70,13 @@ class PageDetallePedido extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
+  final int clientOrUser;
   const PageDetallePedido(
       {super.key,
       required this.clienteId,
       required this.clienteCorreo,
-      required this.clienteContrasena});
+      required this.clienteContrasena,
+      required this.clientOrUser});
 
   @override
   State<PageDetallePedido> createState() => _PageDetallePedidoState();
@@ -418,6 +420,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
         clienteId: widget.clienteId,
         clienteCorreo: widget.clienteCorreo,
         clienteContrasena: widget.clienteContrasena,
+        clientOrUser: widget.clientOrUser,
       ),
       body: Column(
         children: [
@@ -639,16 +642,18 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
                                                       Navigator.pushReplacement(
                                                           context,
                                                           MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      PagePedido(
-                                                                        clienteId:
-                                                                            widget.clienteId,
-                                                                        clienteCorreo:
-                                                                            widget.clienteCorreo,
-                                                                        clienteContrasena:
-                                                                            widget.clienteContrasena,
-                                                                      )));
+                                                              builder: (context) => PagePedido(
+                                                                  clienteId: widget
+                                                                      .clienteId,
+                                                                  clienteCorreo:
+                                                                      widget
+                                                                          .clienteCorreo,
+                                                                  clienteContrasena:
+                                                                      widget
+                                                                          .clienteContrasena,
+                                                                  clientOrUser:
+                                                                      widget
+                                                                          .clientOrUser)));
                                                     },
                                                     child:
                                                         const Text("Aceptar"),

@@ -3,26 +3,77 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:matissamovile/pages/Pedidos/pageDetallePedido.dart';
+import 'package:matissamovile/pages/Pedidos/pagePedido.dart';
 import 'package:matissamovile/pages/widget/drawer.dart';
-import 'package:matissamovile/pages/widget/textoFrom.dart';
+import 'package:intl/intl.dart';
 import '../widget/AppBar.dart';
+
+class DetallePedidoConNombre {
+  final String nombreProducto;
+  final int cantidad;
+  final double precioUnitario;
+
+  DetallePedidoConNombre({
+    required this.nombreProducto,
+    required this.cantidad,
+    required this.precioUnitario,
+  });
+}
+
+class DetallePedido {
+  final int idDetallePedido;
+  final int idProducto;
+  final int idPedido;
+  final int cantidadProducto;
+  final double precioUnitario;
+
+  DetallePedido(
+      {required this.idDetallePedido,
+      required this.idProducto,
+      required this.idPedido,
+      required this.cantidadProducto,
+      required this.precioUnitario});
+
+  factory DetallePedido.fromJson(Map<String, dynamic> json) {
+    return DetallePedido(
+        idDetallePedido: json['idDetallePedido'],
+        idProducto: json['idProducto'],
+        idPedido: json['idPedido'],
+        cantidadProducto: json['cantidadProducto'],
+        precioUnitario: json['precioUnitario'].toDouble());
+  }
+}
 
 class PageCitas extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
-  const PageCitas({Key? key, required this.clienteId, required this.clienteCorreo, required this.clienteContrasena}) : super(key: key);
+  final int clientOrUser;
+  const PageCitas(
+      {super.key,
+      required this.clienteId,
+      required this.clienteCorreo,
+      required this.clienteContrasena,
+      required this.clientOrUser});
 
   @override
   State<PageCitas> createState() => _PageCitasState();
 }
 
 class _PageCitasState extends State<PageCitas> {
-  TimeOfDay? selectedTime;
-  DateTime? selectedDate;
-  List<Map<String, dynamic>> servicios = [];
-  List<Map<String, dynamic>> citas = [];
-  Map<String, dynamic>? selectedService;
+  bool _isCanceling = false;
+  //bool _isDeleting = false;
+  //bool _isEditing = false;
+  bool _loaded = false;
+  List<Map<String, dynamic>> productos = [];
+  List<Map<String, dynamic>> pedidos = [];
+  //late List<DetallePedido> detallePedidos = [];
+  //Map<int, int> detallePedido = {};
+  String selectedProduct = "";
+  int cantidadProducto = 1;
+  double precioProducto = 0.0;
+  double costoTotal = 0.0;
 
   String fecha() {
     DateTime now = DateTime.now();
@@ -38,207 +89,271 @@ class _PageCitasState extends State<PageCitas> {
   @override
   void initState() {
     super.initState();
-    fetchServicios();
-    fetchCitas();
+    fetchPedidos();
+    //fetchProductos();
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(),
-      drawer: MyDrawer(clienteId: widget.clienteId, clienteCorreo: widget.clienteCorreo, clienteContrasena: widget.clienteContrasena,),
-      body: Column(children: [
-        Text("Mis citas", style: TextStyle(fontFamily: GoogleFonts.quicksand().fontFamily, fontSize: 35, fontWeight: FontWeight.bold),),
-        Expanded(
-          child: ListView.builder(
-            itemCount: citas.length,
+      drawer: MyDrawer(
+          clienteId: widget.clienteId,
+          clienteCorreo: widget.clienteCorreo,
+          clienteContrasena: widget.clienteContrasena,
+          clientOrUser: widget.clientOrUser),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(5.0),
+            child: Text(
+              "Mis pedidos",
+              style: TextStyle(
+                  fontFamily: GoogleFonts.quicksand().fontFamily,
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          if (!_loaded)
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: CircularProgressIndicator()), // Icono de carga
+          Expanded(
+              child: ListView.builder(
+            itemCount: pedidos.length,
             itemBuilder: (BuildContext context, int index) {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: ExpansionTileCard(
-                  initialElevation: 2,
-                  expandedColor: const Color.fromARGB(255, 216, 216, 216),
-                  baseColor: const Color.fromRGBO(226, 212, 255, 1),
-                  title: Text('Servicio: ${citas[index]['servicio']}'),
-                  subtitle:Text('Feca registro: ${citas[index]['fechaRegistro']}'),
-                  leading: const Icon(Icons.cut),
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  children: <Widget>[
-                    const Divider(
-                      thickness: 1.0,
-                      height: 1.0,
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            ListTile(
-                              title: const Text('Estado'),
-                              subtitle: citas[index]['estado'] == 1
-                                  ?  const Text('Activo')
-                                  :  const Text('Cancelado'),
-                              trailing: citas[index]['estado'] == 1
-                                  ?  const Icon(Icons.check) 
-                                  :  const Icon(Icons.block),
-                            ),
-                            ListTile(
-                              title: const Text('Precio'),
-                              subtitle: Text('${citas[index]['costoTotal']}'),
-                              trailing: const Icon(Icons.monetization_on),
-                            ),
-                            ListTile(
-                              title: const Text('Fecha de la cita'),
-                              subtitle: Text('${citas[index]['fechaCita']}'),
-                              trailing: const Icon(Icons.event),
-                            ),
-                            ListTile(
-                              title: const Text('Hora de la cita'),
-                              subtitle: Text('${citas[index]['horaCita']}'),
-                              trailing: const Icon(Icons.schedule),
-                            ),
-                          ],
-                        ),
+                  expandedColor: Color.fromARGB(255, 240, 240, 240),
+                  baseColor: Color.fromARGB(255, 240, 240, 240),
+                  title: Row(
+                    children: [
+                      Icon(
+                        Icons.shopping_cart,
+                        color: Color.fromARGB(255, 0, 173, 14),
+                        size: 30,
                       ),
-                    ),
+                      Text(
+                          '  Fecha del pedido: ${pedidos[index]['fechaPedido']}'),
+                    ],
+                  ),
+                  subtitle: Text(
+                      ' Precio total: \$ ${NumberFormat('#,###', 'es_ES').format(pedidos[index]["precioTotalPedido"])}'),
+                  children: <Widget>[
+                    // Otros elementos del pedido...
+                    ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: pedidos[index]['detalles'].length,
+                        itemBuilder: (BuildContext context, int idx) {
+                          return ListTile(
+                              title: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: Color.fromARGB(255, 0, 173, 14),
+                                    ),
+                                    Text(
+                                      '   ${pedidos[index]['detalles'][idx]['producto'][0]['nombreProducto']}',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(children: [
+                                  Text(
+                                    'Subtotal: \$ ${NumberFormat('#,###', 'es_ES').format(pedidos[index]['detalles'][idx]['precioUnitario'])} | ${pedidos[index]['detalles'][idx]['cantidadProducto']} unidades',
+                                  ),
+                                ]),
+                              )
+
+                              // children: <Widget>[
+                              //   ListView.builder(
+                              //     shrinkWrap: true,
+                              //     itemCount: pedidos[index]['detalles'][idx]['producto'].length,
+                              //     itemBuilder: (BuildContext context, int productIdx) {
+                              //       return ListTile(
+                              //         title: Text(
+                              //           '${pedidos[index]['detalles'][idx]['producto'][productIdx]['nombreProducto']}',
+                              //         ),
+                              //         // Otros detalles del producto, si es necesario
+                              //       );
+                              //     },
+                              //   ),
+                              // ],
+                              );
+                        }),
                     Container(
                       decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
-                        color:  Color(0xFFa7e3e1)
-                      ),
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)),
+                          color: Color(0xFFa7e3e1)),
                       child: ButtonBar(
                         alignment: MainAxisAlignment.spaceAround,
                         buttonHeight: 52.0,
                         buttonMinWidth: 90.0,
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              _showEditCitaModal(context, citas[index]);
-                            },
-                            child: const Column(
-                              children: [
-                                Icon(Icons.edit, color: Colors.black54,),
-                                Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
-                                Text("Editar", style: TextStyle(color: Colors.black54))
-                              ],
-                            )
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                      title: const Text("Alerta!"),
-                                      content: const Text("¿Seguro quieres eliminar la cita?"),
-                                      actions: [
-                                      TextButton(
-                                        onPressed: () async{
-                                        await deleteData(citas[index]['_id']);
-                                        await fetchCitas();
-                                        Navigator.of(context).pop();
-                                        _showExitoDialog(context, "Cita eliminada");
-                                        },
-                                        child: const Text("Aceptar")
-                                      ),
-                                      TextButton(
-                                        onPressed: ()=>Navigator.of(context).pop(),
-                                        child: const Text("Cancelar")
-                                      )
-                                    ]
-                                  );
-                                }
-                              );
-                            },
-                            child: const Column(
-                              children: [
-                                Icon(Icons.delete, color: Colors.black54,),
-                                Padding(padding: EdgeInsets.symmetric(vertical: 2.0)),
-                                Text("Eliminar", style: TextStyle(color: Colors.black54))
-                              ],
-                            )
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              if(citas[index]['estado'] == 1){
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text("Alerta!"),
-                                      content: const Text(
-                                          "¿Seguro quieres cancelar la cita?"),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () async {
-                                              await cambiarEstado(
-                                                  citas[index]['_id']);
-                                              Navigator.of(context).pop();
-                                              _showExitoDialog(context, "Cita cancelada");
-                                            },
-                                            child: const Text("Aceptar")),
-                                        TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(),
-                                            child: const Text("Cancelar"))
-                                      ]
-                                    );
+                          if (pedidos[index]['estado'] == 1)
+                            TextButton(
+                                onPressed: () {
+                                  if (pedidos[index]['estado'] == 1) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                              title: const Text("Alerta!"),
+                                              content: const Text(
+                                                  "¿Seguro quieres cancelar el pedido?"),
+                                              actions: [
+                                                if (_isCanceling)
+                                                  Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 5),
+                                                      child:
+                                                          CircularProgressIndicator()), // Icono de carga
+                                                TextButton(
+                                                    onPressed: _isCanceling
+                                                        ? null
+                                                        : () async {
+                                                            setState(() {
+                                                              _isCanceling =
+                                                                  true;
+                                                            });
+                                                            bool success =
+                                                                false;
+                                                            showDialog(
+                                                              context: context,
+                                                              barrierDismissible:
+                                                                  false, // Impide que el usuario cierre el diálogo tocando fuera de él
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return PopScope(
+                                                                  canPop:
+                                                                      false, // Impide que el usuario cierre el diálogo al presionar el botón de retroceso
+                                                                  child:
+                                                                      AlertDialog(
+                                                                    title: const Text(
+                                                                        "Cancelando pedido"),
+                                                                    content: Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .symmetric(
+                                                                            horizontal:
+                                                                                100),
+                                                                        child:
+                                                                            CircularProgressIndicator()),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            );
+                                                            success = await cambiarEstado(
+                                                                pedidos[index][
+                                                                    'idPedido']);
+                                                            await Future
+                                                                .delayed(
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1));
+
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+
+                                                            if (success) {
+                                                              Navigator.pushReplacement(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) => PagePedido(
+                                                                          clienteId: widget
+                                                                              .clienteId,
+                                                                          clienteCorreo: widget
+                                                                              .clienteCorreo,
+                                                                          clienteContrasena: widget
+                                                                              .clienteContrasena,
+                                                                          clientOrUser:
+                                                                              widget.clientOrUser)));
+                                                            }
+                                                          },
+                                                    child:
+                                                        const Text("Aceptar")),
+                                                TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
+                                                    child:
+                                                        const Text("Cancelar"))
+                                              ]);
+                                        });
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: const Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: <Widget>[
+                                                Icon(
+                                                  Icons.cancel,
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text(
+                                                  "El pedido ya esta cancelado",
+                                                  style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 255, 255, 255),
+                                                      fontFamily:
+                                                          'Quicksand-SemiBold'),
+                                                )
+                                              ],
+                                            ),
+                                            duration: const Duration(
+                                                milliseconds: 2000),
+                                            width: 300,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 10),
+                                            behavior: SnackBarBehavior.floating,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(3.0),
+                                            ),
+                                            backgroundColor: Colors.red));
                                   }
-                                );
-                              }else{
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.cancel,
-                                            color: Color.fromARGB(
-                                                255, 255, 255, 255),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            "La cita ya esta cancelada",
-                                            style: TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontFamily:
-                                                    'Quicksand-SemiBold'),
-                                          )
-                                        ],
-                                      ),
-                                      duration: const Duration(
-                                          milliseconds: 2000),
-                                      width: 300,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0, vertical: 10),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(3.0),
-                                      ),
-                                      backgroundColor: Colors.red
-                                  )
-                                );
-                              }
-                            },
-                            child: const Column(
+                                },
+                                child: const Column(
+                                  children: [
+                                    Icon(
+                                      Icons.block,
+                                      color: Colors.black54,
+                                    ),
+                                    Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 2.0)),
+                                    Text("Cancelar",
+                                        style: TextStyle(color: Colors.black54))
+                                  ],
+                                )),
+                          if (pedidos[index]['estado'] == 0)
+                            const Column(
                               children: [
                                 Icon(
-                                  Icons.block,
+                                  Icons.highlight_remove,
                                   color: Colors.black54,
                                 ),
                                 Padding(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 2.0)),
-                                Text("Cancelar",
+                                Text("Cancelado",
                                     style: TextStyle(color: Colors.black54))
                               ],
                             )
-                          ),
                         ],
                       ),
                     )
@@ -246,551 +361,228 @@ class _PageCitasState extends State<PageCitas> {
                 ),
               );
             },
-          ),
-        ),
-      ]),
+          ))
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          _showAddCitaModal(context);
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PageDetallePedido(
+                      clienteId: widget.clienteId,
+                      clienteCorreo: widget.clienteCorreo,
+                      clienteContrasena: widget.clienteContrasena,
+                      clientOrUser: widget.clientOrUser)));
+          setState(() {});
+          //_showModal(context);
         },
       ),
     );
   }
 
-  Future<void> _showAddCitaModal(BuildContext context) async {
-    selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 200),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.dark(),
-          child: child!,
-        );
-      },
-    );
+  Future<bool> cambiarEstado(int id) async {
+    final String uriPedidos =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos/id?id=$id';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
 
-    // ignore: use_build_context_synchronously
-    selectedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.dark(),
-          child: child!,
-        );
-      },
-    );
+    final getPedido = await http
+        .get(Uri.parse(uriPedidos), headers: {'authorization': basicAuth});
+    if (getPedido.statusCode == 200) {
+      Map<String, dynamic> pedido = jsonDecode(getPedido.body);
+      final String uriPutPedido =
+          'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos/$id';
+      final response = await http.put(Uri.parse(uriPutPedido),
+          headers: {
+            'authorization': basicAuth,
+            "Content-Type": "application/json"
+          },
+          body: jsonEncode({
+            'idPedido': pedido['idPedido'],
+            'idCliente': pedido['idCliente'],
+            'fechaPedido': pedido['fechaPedido'],
+            'precioTotalPedido': pedido['precioTotalPedido'],
+            'estado': 0
+          }));
+      final String uriGetDetallePedido =
+          'http://dylanbolivar1-001-site1.ftempurl.com/api/detallePedidos';
+      final getDetallePedido = await http.get(Uri.parse(uriGetDetallePedido),
+          headers: {'authorization': basicAuth});
+      List<dynamic> detallePedido = jsonDecode(getDetallePedido.body);
+      for (var item in detallePedido) {
+        if (item['idPedido'] == id) {
+          final String uriProducto =
+              'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/id?id=${item['idProducto']}';
+          final getProducto = await http.get(Uri.parse(uriProducto),
+              headers: {'authorization': basicAuth});
+          Map<String, dynamic> productos = jsonDecode(getProducto.body);
+          final String uriPutProducto =
+              'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/${item['idProducto']}';
+          final response = await http.put(Uri.parse(uriPutProducto),
+              headers: {
+                'authorization': basicAuth,
+                "Content-Type": "application/json"
+              },
+              body: jsonEncode({
+                'idProducto': productos['idProducto'],
+                'nombreProducto': productos['nombreProducto'],
+                'descripcion': productos['descripcion'],
+                'fechaCaducidad': productos['fechaCaducidad'],
+                'precioVenta': productos['precioVenta'],
+                'saldoInventario':
+                    productos['saldoInventario'] + item['cantidadProducto'],
+                'estado': productos['estado']
+              }));
+          if (response.statusCode == 204) {}
+        }
+      }
 
-    if (selectedDate != null) {
-      selectedDate =
-          DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day);
-      // ignore: use_build_context_synchronously
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              double screenWidth = MediaQuery.of(context).size.width;
-              return Container(
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 44, 44, 44),
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
-                ),
-                width: screenWidth,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      height: 35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(35.0),
-                        color: Colors.white,
-                      ),
-                      child: DropdownButton<Map<String, dynamic>>(
-                        value: selectedService,
-                        onChanged: (Map<String, dynamic>? newValue) {
-                          setState(() {
-                            selectedService = newValue;
-                          });
-                        },
-                        items:
-                            servicios.map<DropdownMenuItem<Map<String, dynamic>>>(
-                          (Map<String, dynamic> servicio) {
-                            return DropdownMenuItem<Map<String, dynamic>>(
-                              value: servicio,
-                              child: Text(servicio['nombre']),
-                            );
-                          },
-                        ).toList(),
-                        hint: const Text('Selecciona un servicio'),
-                        isExpanded: true,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (selectedService != null) ...[
-                      const Text("Servicio",style: TextStyle(color: Colors.white ),),
-                      Label(screenWidth: screenWidth, dato: '${selectedService!['nombre']}'),
-                      const Text("Precio",style: TextStyle(color: Colors.white )),
-                      Label(screenWidth: screenWidth, dato: '${selectedService!['precio']}'),
-                      const Text("Duración",style: TextStyle(color: Colors.white )),
-                      Label(screenWidth: screenWidth, dato: '${selectedService!['duracion']}h'),
-                      const Text("Fecha de la cita",style: TextStyle(color: Colors.white )),
-                      Label(screenWidth: screenWidth, dato: '${selectedDate!.toLocal().toIso8601String().split('T')[0]}'),
-                      const Text("Hora de la cita",style: TextStyle(color: Colors.white )),
-                      Label(screenWidth: screenWidth, dato: '${selectedTime?.hour}:${selectedTime?.minute.toString().padLeft(2, '0')}'),
-                    ],
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Cancelar")
-                            ),
-                          ),
-                          Padding(
-                           padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (selectedService != null) {
-                                  Navigator.of(context).pop();
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Aviso'),
-                                        content: const Text(
-                                            '¿Estas seguro de agendar la cita?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () async {
-                                              await postNuevaCita(
-                                                selectedService!['precio'],
-                                                selectedService!['nombre'],
-                                                '${selectedDate!.toLocal().toIso8601String().split('T')[0]}',
-                                                "${selectedTime?.hour}:${selectedTime?.minute.toString().padLeft(2, '0')}",
-                                              );
-                                              await fetchCitas();
-                                              // ignore: use_build_context_synchronously
-                                              Navigator.of(context).pop();
-                                              // ignore: use_build_context_synchronously
-                                              _showExitoDialog(context, "Cita agendada");
-                                            },
-                                            child: const Text('Agendar'),
-                                          ),
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text("Cancelar"))
-                                        ],
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Aviso'),
-                                        content: const Text('Elija un servicio.'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text('Aceptar'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                              child: const Text('Agendar'),
-                            ),
-                          ),
-                        ],
-                      ) 
-                    )
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      );
+      if (response.statusCode == 204) {
+        return true;
+      } else {}
     }
+    return false;
   }
 
-  Future<void> _showEditCitaModal(BuildContext context, Map<String, dynamic> cita) async {
-        selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 200),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.dark(),
-          child: child!,
-        );
+  Future<void> fetchPedidos() async {
+    final String uriPedidos =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final response = await http.get(
+      Uri.parse(uriPedidos),
+      headers: <String, String>{
+        'authorization': basicAuth,
+        'Content-Type': 'application/json'
       },
     );
-
-    // ignore: use_build_context_synchronously
-    selectedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: ThemeData.dark(),
-          child: child!,
-        );
-      },
-    );
-
-        if (selectedDate != null) {
-      selectedDate =
-          DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day);
-      // ignore: use_build_context_synchronously
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              double screenWidth = MediaQuery.of(context).size.width;
-              return Container(
-                decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 44, 44, 44),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20))),
-                width: screenWidth,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      height: 35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(35.0),
-                        color: Colors.white,
-                      ),
-                      child: DropdownButton<Map<String, dynamic>>(
-                        value: selectedService,
-                        onChanged: (Map<String, dynamic>? newValue) {
-                          setState(() {
-                            selectedService = newValue;
-                          });
-                        },
-                        items: servicios
-                            .map<DropdownMenuItem<Map<String, dynamic>>>(
-                          (Map<String, dynamic> servicio) {
-                            return DropdownMenuItem<Map<String, dynamic>>(
-                              value: servicio,
-                              child: Text(servicio['nombre']),
-                            );
-                          },
-                        ).toList(),
-                        hint: const Text('Selecciona un servicio'),
-                        isExpanded: true,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (selectedService != null) ...[
-                      const Text(
-                        "Servicio",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Label(
-                          screenWidth: screenWidth,
-                          dato: '${selectedService!['nombre']}'),
-                      const Text("Precio",
-                          style: TextStyle(color: Colors.white)),
-                      Label(
-                          screenWidth: screenWidth,
-                          dato: '${selectedService!['precio']}'),
-                      const Text("Duración",
-                          style: TextStyle(color: Colors.white)),
-                      Label(
-                          screenWidth: screenWidth,
-                          dato: '${selectedService!['duracion']}h'),
-                      const Text("Fecha de la cita",
-                          style: TextStyle(color: Colors.white)),
-                      Label(
-                          screenWidth: screenWidth,
-                          dato:
-                              '${selectedDate!.toLocal().toIso8601String().split('T')[0]}'),
-                      const Text("Hora de la cita",
-                          style: TextStyle(color: Colors.white)),
-                      Label(
-                          screenWidth: screenWidth,
-                          dato:
-                              '${selectedTime?.hour}:${selectedTime?.minute.toString().padLeft(2, '0')}'),
-                    ],
-                    const SizedBox(height: 16),
-                    Expanded(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Cancelar")),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (selectedService != null) {
-                                Navigator.of(context).pop();
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Aviso'),
-                                      content: const Text(
-                                          '¿Estas seguro de editar la cita?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () async {
-                                            await putEditarCita(
-                                              cita['_id'],
-                                              selectedService!['precio'],
-                                              selectedService!['nombre'],
-                                              '${selectedDate!.toLocal().toIso8601String().split('T')[0]}',
-                                              "${selectedTime?.hour}:${selectedTime?.minute.toString().padLeft(2, '0')}",
-                                            );
-                                            await fetchCitas();
-                                            // ignore: use_build_context_synchronously
-                                            Navigator.of(context).pop();
-                                            // ignore: use_build_context_synchronously
-                                            _showExitoDialog(
-                                                context, "Cita editada");
-                                          },
-                                          child: const Text('Editar'),
-                                        ),
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text("Cancelar"))
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Aviso'),
-                                      content: const Text('Elija un servicio.'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Aceptar'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              }
-                            },
-                            child: const Text('Editar'),
-                          ),
-                        ),
-                      ],
-                    ))
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      );
-    }
-  }
-
-  Future<void> putEditarCita(String id, int costoTotal, String servicio,
-      String fechaCita, String horaCita) async {
-    final url = Uri.parse('https://matissa.onrender.com/api/citas/$id');
-
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'costoTotal': costoTotal,
-        'servicio': servicio,
-        'fechaCita': fechaCita,
-        'horaCita': horaCita,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      print('Cita actualizada con ID: $id');
-      fetchCitas();
-    } else {
-      print('Error al actualizar la cita: ${response.statusCode}');
-    }
-  }
-
-
-  Future<void> cambiarEstado(String id) async {
-    final url = Uri.parse('https://matissa.onrender.com/api/citas/$id');
-    final response = await http.put(url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({'estado': 0}));
-
-    if (response.statusCode == 200) {
-      print('Estado actualizado: ${response.body}');
-    }
-  }
-
-  Future<void> fetchCitas() async {
-    final response =
-        await http.get(Uri.parse('https://matissa.onrender.com/api/citas'));
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
-      List<Map<String, dynamic>> newCitas = [];
+      List<Map<String, dynamic>> newPedidos = [];
       for (var item in jsonData) {
-        if(item['cliente'] == widget.clienteCorreo){
-          newCitas.add({
-            '_id': item['_id'],
-            'fechaRegistro': item['fechaRegistro'],
-            'horaCita': item['horaCita'],
-            'costoTotal': item['costoTotal'],
-            'servicio': item['servicio'],
-            'fechaCita': item['fechaCita'],
+        if (item['idCliente'] == widget.clienteId && item['estado'] == 1) {
+          String fechaPedidoString = item['fechaPedido'];
+          DateTime fechaPedido = DateTime.parse(
+              fechaPedidoString); // Convertir la cadena en un objeto DateTime
+          // Formatear la fecha como "yyyy-mm-dd"
+          String fechaFormateada =
+              "${fechaPedido.year}-${fechaPedido.month.toString().padLeft(2, '0')}-${fechaPedido.day.toString().padLeft(2, '0')}";
+          newPedidos.add({
+            'idPedido': item['idPedido'],
+            'idCliente': item['idCliente'],
+            'fechaPedido': fechaFormateada,
+            'precioTotalPedido': item['precioTotalPedido'],
             'estado': item['estado'],
-            // Agrega más campos según la estructura de tus citas
+            'detalles': await fetchDetallesPedido(item['idPedido']),
           });
         }
       }
 
-      setState(() {
-        citas = newCitas;
-      });
+      // Ordenar los pedidos por fecha de manera descendente
+      newPedidos.sort((a, b) => DateTime.parse(b['fechaPedido'])
+          .compareTo(DateTime.parse(a['fechaPedido'])));
 
-      print('Citas: $citas');
-    } else {
-      print('Error: ${response.statusCode}');
-    }
+      setState(() {
+        pedidos = newPedidos;
+        _loaded = true;
+      });
+    } else {}
   }
 
-  Future<String> postNuevaCita(int costoTotal, String servicio,
-      String fechaCita, String horaCita) async {
-    final url = Uri.parse('https://matissa.onrender.com/api/citas');
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'cliente': "${widget.clienteCorreo}",
-        'fechaRegistro': '${fecha()}',
-        'costoTotal': costoTotal,
-        'servicio': servicio,
-        'fechaCita': fechaCita,
-        'horaCita': horaCita,
-        'estado': 1
-      }),
+  Future<List<Map<String, dynamic>>> fetchDetallesPedido(int idPedido) async {
+    final String uriDetallesPedido =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallepedidos';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final response = await http.get(
+      Uri.parse(uriDetallesPedido),
+      headers: <String, String>{'authorization': basicAuth},
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> responseData = jsonDecode(response.body);
-      dynamic idValue = responseData['_id'];
-      String nuevaCitaId =
-          idValue is Map ? idValue['\$oid'].toString() : idValue.toString();
-      print('Nueva cita creada con ID: $nuevaCitaId');
-      return nuevaCitaId;
+      List<dynamic> jsonData = jsonDecode(response.body);
+      List<Map<String, dynamic>> detalles = [];
+      for (var item in jsonData) {
+        if (item['idPedido'] == idPedido) {
+          detalles.add({
+            'idDetallePedido': item['idDetallePedido'],
+            'idProducto': item['idProducto'],
+            'cantidadProducto': item['cantidadProducto'],
+            'precioUnitario': item['precioUnitario'],
+            'producto': await fetchProducto(item['idProducto']),
+          });
+        }
+      }
+      return detalles;
     } else {
-      print('Error: ${response.statusCode}');
-      return '';
+      return [];
     }
   }
 
-  Future<void> fetchServicios() async {
-    final response =
-        await http.get(Uri.parse('https://matissa.onrender.com/api/servicios'));
+  Future<List<Map<String, dynamic>>> fetchProducto(int idProducto) async {
+    final String uriProductos =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/productos';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final response = await http.get(
+      Uri.parse(uriProductos),
+      headers: <String, String>{'authorization': basicAuth},
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
-      List<Map<String, dynamic>> newData = [];
+      List<Map<String, dynamic>> producto = [];
       for (var item in jsonData) {
-        newData.add({
-          'id': item['_id'],
-          'nombre': item['nombre'],
-          'precio': item['precio'],
-          'duracion': item['duracion'],
-        });
+        if (item['idProducto'] == idProducto) {
+          producto.add({
+            'nombreProducto': item['nombreProducto'],
+          });
+        }
       }
-
-      setState(() {
-        servicios = newData;
-      });
-
-      print('Servicios: $servicios');
+      return producto;
     } else {
-      print('Error: ${response.statusCode}');
+      return [];
     }
   }
 
-  Future<void> deleteData(String idCita) async {
-    final response = await http.delete(Uri.parse('https://matissa.onrender.com/api/citas/$idCita'));
-
-    if (response.statusCode == 200) {
-      // La respuesta fue exitosa
-      print('Response data: ${response.body}');
-    } else {
-      // Ocurrió un error
-      print('Error: ${response.statusCode}');
-    }
+  void _showExitoDialog(BuildContext context, String errorMessage) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Icon(
+              Icons.check_circle,
+              color: Color.fromARGB(255, 255, 255, 255),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+              errorMessage,
+              style: const TextStyle(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontFamily: 'Quicksand-SemiBold'),
+            )
+          ],
+        ),
+        duration: const Duration(milliseconds: 2000),
+        width: 300,
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(3.0),
+        ),
+        backgroundColor: const Color.fromARGB(255, 12, 195, 106)));
   }
-}
-
-void _showExitoDialog(BuildContext context, String errorMessage) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          const Icon(
-            Icons.check_circle,
-            color: Color.fromARGB(255, 255, 255, 255),
-          ),
-          const SizedBox(
-            width: 5,
-          ),
-          Text(
-            errorMessage,
-            style: const TextStyle(
-                color: Color.fromARGB(255, 255, 255, 255),
-                fontFamily: 'Quicksand-SemiBold'),
-          )
-        ],
-      ),
-      duration: const Duration(milliseconds: 2000),
-      width: 300,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(3.0),
-      ),
-      backgroundColor: const Color.fromARGB(255, 12, 195, 106)));
 }

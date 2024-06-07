@@ -26,11 +26,14 @@ class PageProductos extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
-  const PageProductos(
-      {super.key,
-      required this.clienteId,
-      required this.clienteCorreo,
-      required this.clienteContrasena});
+  final int clientOrUser;
+  const PageProductos({
+    super.key,
+    required this.clienteId,
+    required this.clienteCorreo,
+    required this.clienteContrasena,
+    required this.clientOrUser,
+  });
 
   @override
   State<PageProductos> createState() => _PageProductosState();
@@ -56,6 +59,7 @@ class _PageProductosState extends State<PageProductos> {
           clienteId: widget.clienteId,
           clienteCorreo: widget.clienteCorreo,
           clienteContrasena: widget.clienteContrasena,
+          clientOrUser: widget.clientOrUser,
         ),
         body: Column(
           children: [

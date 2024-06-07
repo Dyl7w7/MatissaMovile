@@ -10,11 +10,13 @@ class MyDrawer extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
+  final int clientOrUser;
   const MyDrawer(
       {super.key,
       required this.clienteId,
       required this.clienteCorreo,
-      required this.clienteContrasena});
+      required this.clienteContrasena,
+      required this.clientOrUser});
 
   @override
   State<MyDrawer> createState() => _MyDrawerState();
@@ -70,120 +72,129 @@ class _MyDrawerState extends State<MyDrawer> {
                               color: Colors.white,
                             ),
                           ),
-                          
                         ),
                       ],
                     ),
                   ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.person,
-                      size: 30,
-                      color: Colors.black,
-                    ),
-                    title: Text(
-                      'Perfil',
-                      style: TextStyle(
-                        fontSize: 20,
+                  if (widget.clientOrUser == 1)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.person,
+                        size: 30,
                         color: Colors.black,
-                        fontFamily: GoogleFonts.quicksand().fontFamily,
                       ),
+                      title: Text(
+                        'Perfil',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                      ),
+                      selected: _selectedIndex == 0,
+                      onTap: () {
+                        _onItemTapped(0);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PerfilPage(
+                                clienteId: widget.clienteId,
+                                clienteCorreo: widget.clienteCorreo,
+                                clienteContrasena: widget.clienteContrasena,
+                                clientOrUser: widget.clientOrUser,
+                              ),
+                            ));
+                      },
                     ),
-                    selected: _selectedIndex == 0,
-                    onTap: () {
-                      _onItemTapped(0);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PerfilPage(
-                              clienteId: widget.clienteId,
-                              clienteCorreo: widget.clienteCorreo,
-                              clienteContrasena: widget.clienteContrasena,
-                            ),
-                          ));
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.event,
-                      size: 30,
-                      color: Colors.black,
-                    ),
-                    title: Text(
-                      'Mis citas',
-                      style: TextStyle(
-                        fontSize: 20,
+                  if (widget.clientOrUser == 1)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.shopping_bag,
+                        size: 30,
                         color: Colors.black,
-                        fontFamily: GoogleFonts.quicksand().fontFamily,
                       ),
+                      title: Text(
+                        'Mis pedidos',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                      ),
+                      selected: _selectedIndex == 1,
+                      onTap: () {
+                        _onItemTapped(2);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PagePedido(
+                                      clienteId: widget.clienteId,
+                                      clienteCorreo: widget.clienteCorreo,
+                                      clienteContrasena:
+                                          widget.clienteContrasena,
+                                      clientOrUser: widget.clientOrUser,
+                                    )));
+                      },
                     ),
-                    selected: _selectedIndex == 1,
-                    onTap: () {
-                      _onItemTapped(1);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PageCitas(
+                  if (widget.clientOrUser == 0)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.badge,
+                        size: 30,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        'Ventas',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                      ),
+                      selected: _selectedIndex == 2,
+                      onTap: () {
+                        _onItemTapped(3);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageProductos(
+                                      clienteId: widget.clienteId,
+                                      clienteCorreo: widget.clienteCorreo,
+                                      clienteContrasena:
+                                          widget.clienteContrasena,
+                                      clientOrUser: widget.clientOrUser,
+                                    )));
+                      },
+                    ),
+                  if (widget.clientOrUser == 0)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.event,
+                        size: 30,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        'Citas',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                      ),
+                      selected: _selectedIndex == 3,
+                      onTap: () {
+                        _onItemTapped(1);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageCitas(
                                     clienteId: widget.clienteId,
                                     clienteCorreo: widget.clienteCorreo,
                                     clienteContrasena: widget.clienteContrasena,
-                                  )));
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.shopping_bag,
-                      size: 30,
-                      color: Colors.black,
+                                    clientOrUser: widget.clientOrUser)));
+                      },
                     ),
-                    title: Text(
-                      'Mis pedidos',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontFamily: GoogleFonts.quicksand().fontFamily,
-                      ),
-                    ),
-                    selected: _selectedIndex == 2,
-                    onTap: () {
-                      _onItemTapped(2);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PagePedido(
-                                    clienteId: widget.clienteId,
-                                    clienteCorreo: widget.clienteCorreo,
-                                    clienteContrasena: widget.clienteContrasena,
-                                  )));
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.badge,
-                      size: 30,
-                      color: Colors.black,
-                    ),
-                    title: Text(
-                      'Productos',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontFamily: GoogleFonts.quicksand().fontFamily,
-                      ),
-                    ),
-                    selected: _selectedIndex == 2,
-                    onTap: () {
-                      _onItemTapped(3);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PageProductos(
-                                    clienteId: widget.clienteId,
-                                    clienteCorreo: widget.clienteCorreo,
-                                    clienteContrasena: widget.clienteContrasena,
-                                  )));
-                    },
-                  ),
+
                   // ListTile(
                   //   leading: const Icon(
                   //     Icons.badge,

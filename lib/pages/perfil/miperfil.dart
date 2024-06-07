@@ -11,11 +11,13 @@ class PerfilPage extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
+  final int clientOrUser;
   const PerfilPage(
       {Key? key,
       required this.clienteId,
       required this.clienteCorreo,
-      required this.clienteContrasena})
+      required this.clienteContrasena,
+      required this.clientOrUser})
       : super(key: key);
 
   @override
@@ -50,10 +52,10 @@ class _PerfilPageState extends State<PerfilPage> {
     return Scaffold(
         appBar: MyAppBar(),
         drawer: MyDrawer(
-          clienteId: widget.clienteId,
-          clienteCorreo: widget.clienteCorreo,
-          clienteContrasena: widget.clienteContrasena,
-        ),
+            clienteId: widget.clienteId,
+            clienteCorreo: widget.clienteCorreo,
+            clienteContrasena: widget.clienteContrasena,
+            clientOrUser: widget.clientOrUser),
         body: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
@@ -431,15 +433,15 @@ class _PerfilPageState extends State<PerfilPage> {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MenuPage(
-                                                        clienteId:
-                                                            widget.clienteId,
-                                                        clienteCorreo: widget
-                                                            .clienteCorreo,
-                                                        clienteContrasena: widget
-                                                            .clienteContrasena,
-                                                      )));
+                                                  builder: (context) => MenuPage(
+                                                      clienteId:
+                                                          widget.clienteId,
+                                                      clienteCorreo:
+                                                          widget.clienteCorreo,
+                                                      clienteContrasena: widget
+                                                          .clienteContrasena,
+                                                      clientOrUser: widget
+                                                          .clientOrUser)));
                                         },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 10,
@@ -553,10 +555,10 @@ class _PerfilPageState extends State<PerfilPage> {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
                 builder: (context) => PerfilPage(
-                      clienteId: widget.clienteId,
-                      clienteCorreo: widget.clienteCorreo,
-                      clienteContrasena: widget.clienteContrasena,
-                    )),
+                    clienteId: widget.clienteId,
+                    clienteCorreo: widget.clienteCorreo,
+                    clienteContrasena: widget.clienteContrasena,
+                    clientOrUser: widget.clientOrUser)),
           );
           return true;
         } else {
