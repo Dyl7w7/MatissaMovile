@@ -4,6 +4,7 @@ import 'package:matissamovile/pages/Citas/pageCitas.dart';
 import 'package:matissamovile/pages/Login/login.dart';
 import 'package:matissamovile/pages/Pedidos/pagePedido.dart';
 import 'package:matissamovile/pages/Productos/pageProductos.dart';
+import 'package:matissamovile/pages/Ventas/pageVentas.dart';
 import 'package:matissamovile/pages/perfil/miperfil.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -123,7 +124,7 @@ class _MyDrawerState extends State<MyDrawer> {
                       ),
                       selected: _selectedIndex == 1,
                       onTap: () {
-                        _onItemTapped(2);
+                        _onItemTapped(1);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -136,37 +137,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                     )));
                       },
                     ),
-                  if (widget.clientOrUser == 0)
-                    ListTile(
-                      leading: const Icon(
-                        Icons.badge,
-                        size: 30,
-                        color: Colors.black,
-                      ),
-                      title: Text(
-                        'Ventas',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                          fontFamily: GoogleFonts.quicksand().fontFamily,
-                        ),
-                      ),
-                      selected: _selectedIndex == 2,
-                      onTap: () {
-                        _onItemTapped(3);
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PageProductos(
-                                      clienteId: widget.clienteId,
-                                      clienteCorreo: widget.clienteCorreo,
-                                      clienteContrasena:
-                                          widget.clienteContrasena,
-                                      clientOrUser: widget.clientOrUser,
-                                    )));
-                      },
-                    ),
-                  if (widget.clientOrUser == 0)
+                    if (widget.clientOrUser == 0)
                     ListTile(
                       leading: const Icon(
                         Icons.event,
@@ -181,13 +152,72 @@ class _MyDrawerState extends State<MyDrawer> {
                           fontFamily: GoogleFonts.quicksand().fontFamily,
                         ),
                       ),
-                      selected: _selectedIndex == 3,
+                      selected: _selectedIndex == 2,
                       onTap: () {
-                        _onItemTapped(1);
+                        _onItemTapped(2);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => PageCitas(
+                                    clienteId: widget.clienteId,
+                                    clienteCorreo: widget.clienteCorreo,
+                                    clienteContrasena: widget.clienteContrasena,
+                                    clientOrUser: widget.clientOrUser)));
+                      },
+                    ),
+                  if (widget.clientOrUser == 0)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.monetization_on,
+                        size: 30,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        'Ventas',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                      ),
+                      selected: _selectedIndex == 3,
+                      onTap: () {
+                        _onItemTapped(3);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageVentas(
+                                      clienteId: widget.clienteId,
+                                      clienteCorreo: widget.clienteCorreo,
+                                      clienteContrasena:
+                                          widget.clienteContrasena,
+                                      clientOrUser: widget.clientOrUser,
+                                    )));
+                      },
+                    ),
+                  
+                    if (widget.clientOrUser == 0)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.shopping_cart,
+                        size: 30,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        'Productos',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                      ),
+                      selected: _selectedIndex == 4,
+                      onTap: () {
+                        _onItemTapped(4);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PageProductos(
                                     clienteId: widget.clienteId,
                                     clienteCorreo: widget.clienteCorreo,
                                     clienteContrasena: widget.clienteContrasena,

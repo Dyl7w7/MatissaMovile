@@ -130,7 +130,7 @@ class _PagePedidoState extends State<PagePedido> {
                     children: [
                       Icon(
                         Icons.shopping_cart,
-                        color: Color.fromARGB(255, 0, 173, 14),
+                        color: Color.fromARGB(255, 0, 124, 173),
                         size: 30,
                       ),
                       Text(
@@ -152,7 +152,7 @@ class _PagePedidoState extends State<PagePedido> {
                                   children: [
                                     Icon(
                                       Icons.check_circle,
-                                      color: Color.fromARGB(255, 0, 173, 14),
+                                      color: Color.fromARGB(255, 0, 133, 173),
                                     ),
                                     Text(
                                       '   ${pedidos[index]['detalles'][idx]['producto'][0]['nombreProducto']}',
