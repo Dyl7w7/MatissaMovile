@@ -84,51 +84,61 @@ class _MyLoginState extends State<MyLogin> {
             orElse: () => null);
 
         if (usuario != null) {
-          final String storedCorreo = usuario['correo'];
-          final String storedPassword = usuario['contraseña'];
-          final int idCliente = usuario['idUsuario'];
+          if (usuario['estado'] == 1) {
+            final String storedCorreo = usuario['correo'];
+            final String storedPassword = usuario['contraseña'];
+            final int idCliente = usuario['idUsuario'];
 
-          String encryptedPassword = encryptPassword(password);
+            String encryptedPassword = encryptPassword(password);
 
-          if (encryptedPassword == storedPassword) {
-            // Puedes hacer lo que necesitas con el ID y otros datos
-            // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
+            if (encryptedPassword == storedPassword) {
+              // Puedes hacer lo que necesitas con el ID y otros datos
+              // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
 
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MenuPage(
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MenuPage(
+                          clienteId: idCliente,
+                          clienteCorreo: "$storedCorreo",
+                          clienteContrasena: "$storedPassword",
+                          clientOrUser: 0,
+                        )),
+              );
+            } else {
+              _showErrorDialog(context, 'Contraseña incorrecta');
+            }
+          } else {
+            _showErrorDialog(
+                context, 'Este usuario se encuentra \n inhabilitado');
+          }
+        } else if (cliente != null) {
+          if (cliente['estado'] == 1) {
+            final String storedCorreo = cliente['correo'];
+            final String storedPassword = cliente['contraseña'];
+            final int idCliente = cliente['idCliente'];
+
+            String encryptedPassword = encryptPassword(password);
+
+            if (encryptedPassword == storedPassword) {
+              // Puedes hacer lo que necesitas con el ID y otros datos
+              // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MenuPage(
                         clienteId: idCliente,
                         clienteCorreo: "$storedCorreo",
                         clienteContrasena: "$storedPassword",
-                        clientOrUser: 0,
-                      )),
-            );
+                        clientOrUser: 1)),
+              );
+            } else {
+              _showErrorDialog(context, 'Contraseña incorrecta');
+            }
           } else {
-            _showErrorDialog(context, 'Contraseña incorrecta');
-          }
-        } else if (cliente != null) {
-          final String storedCorreo = cliente['correo'];
-          final String storedPassword = cliente['contraseña'];
-          final int idCliente = cliente['idCliente'];
-
-          String encryptedPassword = encryptPassword(password);
-
-          if (encryptedPassword == storedPassword) {
-            // Puedes hacer lo que necesitas con el ID y otros datos
-            // En este ejemplo, simplemente imprimimos el ID y vamos a la siguiente página
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MenuPage(
-                      clienteId: idCliente,
-                      clienteCorreo: "$storedCorreo",
-                      clienteContrasena: "$storedPassword",
-                      clientOrUser: 1)),
-            );
-          } else {
-            _showErrorDialog(context, 'Contraseña incorrecta');
+            _showErrorDialog(
+                context, 'Este usuario se encuentra\ninhabilitado');
           }
         } else {
           _showErrorDialog(context, 'Usuario no encontrado');
@@ -377,7 +387,7 @@ void _showErrorDialog(BuildContext context, String errorMessage) {
           )
         ],
       ),
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 3500),
       width: 300,
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
       behavior: SnackBarBehavior.floating,

@@ -364,7 +364,11 @@ class _PagePedidoState extends State<PagePedido> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Color.fromRGBO(255, 255, 255, 1),
+        ),
+        backgroundColor: Color.fromRGBO(60, 195, 189, 1),
         onPressed: () {
           Navigator.pushReplacement(
               context,

@@ -10,15 +10,20 @@ class Product {
   final int id;
   final String nombre;
   final double precio;
+  final int estado;
 
-  Product({required this.id, required this.nombre, required this.precio});
+  Product(
+      {required this.id,
+      required this.nombre,
+      required this.precio,
+      required this.estado});
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['idProducto'],
-      nombre: json['nombreProducto'],
-      precio: json['precioVenta'].toDouble(),
-    );
+        id: json['idProducto'],
+        nombre: json['nombreProducto'],
+        precio: json['precioVenta'].toDouble(),
+        estado: json['estado']);
   }
 }
 
@@ -123,7 +128,10 @@ class _PageProductosState extends State<PageProductos> {
                                   children: [
                                     Icon(
                                       Icons.add_shopping_cart,
-                                      color: Color.fromARGB(255, 0, 193, 207),
+                                      color:
+                                          productosFiltrados[index].estado == 1
+                                              ? Color.fromARGB(255, 0, 193, 207)
+                                              : Color.fromARGB(255, 207, 0, 0),
                                       size: 30,
                                     ),
                                     Text(
@@ -133,15 +141,20 @@ class _PageProductosState extends State<PageProductos> {
                                 ),
                               ),
                               //subtitle: Text('\$ ${productos[index].precio.toStringAsFixed(2)}'),
+
                               subtitle: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
                                 child: Text(
-                                  ' Precio venta: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}',
+                                  ' Estado: ${productosFiltrados[index].estado == 1 ? "A la venta" : "No a la venta"} \n Precio venta: \$ ${NumberFormat('#,###', 'es_ES').format(productosFiltrados[index].precio)}',
                                 ),
                               ),
                               trailing: Icon(
-                                Icons.check_circle,
-                                color: Color.fromARGB(255, 0, 207, 17),
+                                productosFiltrados[index].estado == 1
+                                    ? Icons.check_circle
+                                    : Icons.not_interested,
+                                color: productosFiltrados[index].estado == 1
+                                    ? Color.fromARGB(255, 0, 207, 17)
+                                    : Color.fromARGB(255, 207, 0, 0),
                                 size: 30,
                               ),
                             ),
@@ -170,8 +183,10 @@ class _PageProductosState extends State<PageProductos> {
       List<dynamic> jsonData = jsonDecode(response.body);
       List<Product> newData = [];
       for (var item in jsonData) {
-        if (item['estado'] ==
-            1 /*|| item['estado'] == 2 || item['estado'] == 3*/) {
+        if (item['estado'] == 1 ||
+            item['estado'] == 2 ||
+            item['estado'] == 3 ||
+            item['estado'] == 0) {
           newData.add(Product.fromJson(item));
         }
       }
