@@ -7,6 +7,42 @@ import 'package:matissamovile/pages/widget/drawer.dart';
 import 'package:intl/intl.dart';
 import '../widget/AppBar.dart';
 
+class DetalleCitaConNombre {
+  final String nombreServicio;
+  final int horaInicio;
+  final int horaFin;
+  final double costoServicio;
+
+  DetalleCitaConNombre({
+    required this.nombreServicio,
+    required this.horaInicio,
+    required this.horaFin,
+    required this.costoServicio,
+  });
+}
+
+class DetalleCita {
+  final int idDetalleCita;
+  final int idServicio;
+  final int idCita;
+  final double descuento;
+  
+
+  DetalleCita(
+      {required this.idDetalleCita,
+      required this.idServicio,
+      required this.idCita,
+      required this.descuento});
+
+  factory DetalleCita.fromJson(Map<String, dynamic> json) {
+    return DetalleCita(
+        idDetalleCita: json['idDetallePedido'],
+        idServicio: json['idProducto'],
+        idCita: json['idPedido'],
+        descuento: json['cantidadProducto'].toDouble());
+  }
+}
+
 class DetallePedidoConNombre {
   final String nombreProducto;
   final int cantidad;
@@ -63,6 +99,11 @@ class _PageVentasState extends State<PageVentas> {
   bool _loaded = false;
   List<Map<String, dynamic>> productos = [];
   List<Map<String, dynamic>> pedidos = [];
+  List<Map<String, dynamic>> citas = [];
+  List<Map<String, dynamic>> servicios = [];
+
+  // Ordenar los pedidos por fecha de manera descendente
+      
   //late List<DetallePedido> detallePedidos = [];
   //Map<int, int> detallePedido = {};
   String selectedProduct = "";
@@ -85,6 +126,10 @@ class _PageVentasState extends State<PageVentas> {
   void initState() {
     super.initState();
     fetchPedidos();
+    fetchCitas();
+
+    citas.sort((a, b) => DateTime.parse(b['detalle'][0]['fechaCita'])
+          .compareTo(DateTime.parse(a['detalle'][0]['fechaCita'])));
     //fetchProductos();
   }
 
@@ -96,12 +141,34 @@ class _PageVentasState extends State<PageVentas> {
           clienteCorreo: widget.clienteCorreo,
           clienteContrasena: widget.clienteContrasena,
           clientOrUser: widget.clientOrUser),
-      body: Column(
+      body: _widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem> [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: 'Pedidos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: 'Citas',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Color.fromRGBO(60, 195, 189, 1),
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+
+  int _selectedIndex = 0;
+  List<Widget> get _widgetOptions => <Widget>[
+    /* ------------------------- PEDIDOS ------------------------------ */
+    Column(
         children: [
           Padding(
             padding: EdgeInsets.all(5.0),
             child: Text(
-              "Ventas",
+              "Pedidos",
               style: TextStyle(
                   fontFamily: GoogleFonts.quicksand().fontFamily,
                   fontSize: 35,
@@ -136,7 +203,6 @@ class _PageVentasState extends State<PageVentas> {
                   subtitle: Text(
                       ' Cliente: ${pedidos[index]['cliente'][0]['nombreCliente']} ${pedidos[index]['cliente'][0]['apellidoCliente']} - ${pedidos[index]['cliente'][0]['cedula']} \n Precio total: \$ ${NumberFormat('#,###', 'es_ES').format(pedidos[index]["precioTotalPedido"])}'),
                   children: <Widget>[
-                    // Otros elementos del pedido...
                     ListView.builder(
                         shrinkWrap: true,
                         itemCount: pedidos[index]['detalles'].length,
@@ -173,7 +239,196 @@ class _PageVentasState extends State<PageVentas> {
           ))
         ],
       ),
+
+      /* ------------------------- CITAS ------------------------------ */
+      Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(5.0),
+            child: Text(
+              "Citas",
+              style: TextStyle(
+                  fontFamily: GoogleFonts.quicksand().fontFamily,
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          if (!_loaded)
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: CircularProgressIndicator()), // Icono de carga
+          Expanded(
+              child: ListView.builder(
+            itemCount: citas.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ExpansionTileCard(
+                  expandedColor: Color.fromARGB(255, 240, 240, 240),
+                  baseColor: Color.fromARGB(255, 240, 240, 240),
+                  title: Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_month,
+                        color: Color.fromARGB(255, 0, 173, 14),
+                        size: 30,
+                      ),
+                      Text(
+                          '  Fecha de la cita: ${citas[index]['detalles'][0]['fechaCita']}'),
+                    ],
+                  ),
+                  subtitle: Text(
+                      ' Cliente: ${citas[index]['cliente'][0]['nombreCliente']} ${citas[index]['cliente'][0]['apellidoCliente']} | ${citas[index]['cliente'][0]['cedula']} \n Precio total: \$ ${NumberFormat('#,###', 'es_ES').format(citas[index]["costoTotal"])}'),
+                  children: <Widget>[
+                    ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: citas[index]['detalles'].length,
+                        itemBuilder: (BuildContext context, int idx) {
+                          return ListTile(
+                              title: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: Color.fromARGB(255, 0, 173, 14),
+                                    ),
+                                    Text(
+                                      '   ${citas[index]['detalles'][idx]['servicio'][0]['nombreServicio']}',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(children: [
+                                  Text(
+                                    ' Hora inicio: ${citas[index]['detalles'][idx]['horaInicio']}\n Hora fin: ${citas[index]['detalles'][idx]['horaFin']}\n Costo: \$ ${NumberFormat('#,###', 'es_ES').format(citas[index]['detalles'][idx]['costoServicio'])}',
+                                  ),
+                                ]),
+                              )
+                            );
+                        }),
+                  ],
+                ),
+              );
+            },
+          ))
+        ],
+      ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Future<void> fetchCitas() async {
+    final String uriCitas =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/citums';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final response = await http.get(
+      Uri.parse(uriCitas),
+      headers: <String, String>{
+        'authorization': basicAuth,
+        'Content-Type': 'application/json'
+      },
     );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      List<Map<String, dynamic>> newCitas = [];
+      for (var item in jsonData) {
+        if (item['estado'] == 3) {
+          newCitas.add({
+            'idCita': item['idCita'],
+            'idCliente': item['idCliente'],
+            'costoTotal': item['costoTotal'],
+            'cliente': await fetchCliente(item['idCliente']),
+            'detalles': await fetchDetallesCita(item['idCita']),
+
+          });
+        }
+      }
+
+      setState(() {
+        citas = newCitas;
+        _loaded = true;
+      });
+    } else {}
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDetallesCita(int idCita) async {
+    final String uriDetallesCitas =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallecitums';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final response = await http.get(
+      Uri.parse(uriDetallesCitas),
+      headers: <String, String>{'authorization': basicAuth},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      List<Map<String, dynamic>> detalles = [];
+      for (var item in jsonData) {
+        if (item['idCita'] == idCita) {
+          String fechaCitaString = item['fechaCita'];
+          DateTime fechaCita = DateTime.parse(fechaCitaString);
+          String fechaFormateada =
+              "${fechaCita.year}-${fechaCita.month.toString().padLeft(2, '0')}-${fechaCita.day.toString().padLeft(2, '0')}";
+
+
+          detalles.add({
+            'idDetalleCita': item['idDetalleCita'],
+            'idServicio': item['idServicio'],
+            'fechaCita': fechaFormateada,
+            'horaInicio': item['horaInicio'],
+            'horaFin': item['horaFin'],
+            'costoServicio': item['costoServicio'],
+            'servicio': await fetchServicio(item['idServicio']),
+          });
+        }
+      }
+      return detalles;
+    } else {
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchServicio(int idServicio) async {
+    final String uriServicios =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/servicios';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final response = await http.get(
+      Uri.parse(uriServicios),
+      headers: <String, String>{'authorization': basicAuth},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      List<Map<String, dynamic>> servicio = [];
+      for (var item in jsonData) {
+        if (item['idServicio'] == idServicio) {
+          servicio.add({
+            'nombreServicio': item['nombreServicio'],
+          });
+        }
+      }
+      return servicio;
+    } else {
+      return [];
+    }
   }
 
   Future<void> fetchPedidos() async {
