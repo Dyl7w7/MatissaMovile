@@ -168,22 +168,7 @@ class _PagePedidoState extends State<PagePedido> {
                                   ),
                                 ]),
                               )
-
-                              // children: <Widget>[
-                              //   ListView.builder(
-                              //     shrinkWrap: true,
-                              //     itemCount: pedidos[index]['detalles'][idx]['producto'].length,
-                              //     itemBuilder: (BuildContext context, int productIdx) {
-                              //       return ListTile(
-                              //         title: Text(
-                              //           '${pedidos[index]['detalles'][idx]['producto'][productIdx]['nombreProducto']}',
-                              //         ),
-                              //         // Otros detalles del producto, si es necesario
-                              //       );
-                              //     },
-                              //   ),
-                              // ],
-                              );
+                            );
                         }),
                     Container(
                       decoration: const BoxDecoration(

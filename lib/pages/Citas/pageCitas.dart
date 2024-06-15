@@ -3,45 +3,43 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:expansion_tile_card/expansion_tile_card.dart';
-import 'package:matissamovile/pages/Pedidos/pageDetallePedido.dart';
-import 'package:matissamovile/pages/Pedidos/pagePedido.dart';
 import 'package:matissamovile/pages/widget/drawer.dart';
 import 'package:intl/intl.dart';
 import '../widget/AppBar.dart';
 
-class DetallePedidoConNombre {
-  final String nombreProducto;
-  final int cantidad;
-  final double precioUnitario;
+class DetalleCitaConNombre {
+  final String nombreServicio;
+  final int horaInicio;
+  final int horaFin;
+  final double costoServicio;
 
-  DetallePedidoConNombre({
-    required this.nombreProducto,
-    required this.cantidad,
-    required this.precioUnitario,
+  DetalleCitaConNombre({
+    required this.nombreServicio,
+    required this.horaInicio,
+    required this.horaFin,
+    required this.costoServicio,
   });
 }
 
-class DetallePedido {
-  final int idDetallePedido;
-  final int idProducto;
-  final int idPedido;
-  final int cantidadProducto;
-  final double precioUnitario;
+class DetalleCita {
+  final int idDetalleCita;
+  final int idServicio;
+  final int idCita;
+  final double descuento;
+  
 
-  DetallePedido(
-      {required this.idDetallePedido,
-      required this.idProducto,
-      required this.idPedido,
-      required this.cantidadProducto,
-      required this.precioUnitario});
+  DetalleCita(
+      {required this.idDetalleCita,
+      required this.idServicio,
+      required this.idCita,
+      required this.descuento});
 
-  factory DetallePedido.fromJson(Map<String, dynamic> json) {
-    return DetallePedido(
-        idDetallePedido: json['idDetallePedido'],
-        idProducto: json['idProducto'],
-        idPedido: json['idPedido'],
-        cantidadProducto: json['cantidadProducto'],
-        precioUnitario: json['precioUnitario'].toDouble());
+  factory DetalleCita.fromJson(Map<String, dynamic> json) {
+    return DetalleCita(
+        idDetalleCita: json['idDetallePedido'],
+        idServicio: json['idProducto'],
+        idCita: json['idPedido'],
+        descuento: json['cantidadProducto'].toDouble());
   }
 }
 
@@ -58,22 +56,14 @@ class PageCitas extends StatefulWidget {
       required this.clientOrUser});
 
   @override
-  State<PageCitas> createState() => _PageCitasState();
+  State<PageCitas> createState() => _PageCitaState();
 }
 
-class _PageCitasState extends State<PageCitas> {
+class _PageCitaState extends State<PageCitas> {
   bool _isCanceling = false;
-  //bool _isDeleting = false;
-  //bool _isEditing = false;
   bool _loaded = false;
-  List<Map<String, dynamic>> productos = [];
-  List<Map<String, dynamic>> pedidos = [];
-  //late List<DetallePedido> detallePedidos = [];
-  //Map<int, int> detallePedido = {};
-  String selectedProduct = "";
-  int cantidadProducto = 1;
-  double precioProducto = 0.0;
-  double costoTotal = 0.0;
+  List<Map<String, dynamic>> servicios = [];
+  List<Map<String, dynamic>> citas = [];
 
   String fecha() {
     DateTime now = DateTime.now();
@@ -89,8 +79,7 @@ class _PageCitasState extends State<PageCitas> {
   @override
   void initState() {
     super.initState();
-    fetchPedidos();
-    //fetchProductos();
+    fetchCitas();
   }
 
   Widget build(BuildContext context) {
@@ -106,7 +95,7 @@ class _PageCitasState extends State<PageCitas> {
           Padding(
             padding: EdgeInsets.all(5.0),
             child: Text(
-              "Mis pedidos",
+              "Citas",
               style: TextStyle(
                   fontFamily: GoogleFonts.quicksand().fontFamily,
                   fontSize: 35,
@@ -120,7 +109,7 @@ class _PageCitasState extends State<PageCitas> {
                 child: CircularProgressIndicator()), // Icono de carga
           Expanded(
               child: ListView.builder(
-            itemCount: pedidos.length,
+            itemCount: citas.length,
             itemBuilder: (BuildContext context, int index) {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -130,21 +119,21 @@ class _PageCitasState extends State<PageCitas> {
                   title: Row(
                     children: [
                       Icon(
-                        Icons.shopping_cart,
-                        color: Color.fromARGB(255, 0, 173, 14),
+                        citas[index]['estado'] != 0 ? Icons.calendar_month : Icons.block,
+                        color: citas[index]['estado'] != 0 ? Color.fromARGB(255, 0, 124, 173) : Color.fromARGB(255, 173, 0, 0),
                         size: 30,
                       ),
                       Text(
-                          '  Fecha del pedido: ${pedidos[index]['fechaPedido']}'),
+                          '  Fecha de la cita: ${citas[index]['detalles'][0]['fechaCita']}'),
                     ],
                   ),
                   subtitle: Text(
-                      ' Precio total: \$ ${NumberFormat('#,###', 'es_ES').format(pedidos[index]["precioTotalPedido"])}'),
+                      ' Cliente: ${citas[index]['cliente'][0]['nombreCliente']} ${citas[index]['cliente'][0]['apellidoCliente']} | ${citas[index]['cliente'][0]['cedula']} \n Precio total: \$ ${NumberFormat('#,###', 'es_ES').format(citas[index]["costoTotal"])}'),
                   children: <Widget>[
                     // Otros elementos del pedido...
                     ListView.builder(
                         shrinkWrap: true,
-                        itemCount: pedidos[index]['detalles'].length,
+                        itemCount: citas[index]['detalles'].length,
                         itemBuilder: (BuildContext context, int idx) {
                           return ListTile(
                               title: Padding(
@@ -152,11 +141,11 @@ class _PageCitasState extends State<PageCitas> {
                                 child: Row(
                                   children: [
                                     Icon(
-                                      Icons.check_circle,
-                                      color: Color.fromARGB(255, 0, 173, 14),
+                                      citas[index]['estado'] != 0 ? Icons.check_circle : Icons.cancel,
+                                      color: citas[index]['estado'] != 0 ? Color.fromARGB(255, 0, 133, 173) : Color.fromARGB(255, 173, 0, 0),
                                     ),
                                     Text(
-                                      '   ${pedidos[index]['detalles'][idx]['producto'][0]['nombreProducto']}',
+                                      '   ${citas[index]['detalles'][idx]['servicio'][0]['nombreServicio']}',
                                     ),
                                   ],
                                 ),
@@ -165,26 +154,11 @@ class _PageCitasState extends State<PageCitas> {
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 child: Row(children: [
                                   Text(
-                                    'Subtotal: \$ ${NumberFormat('#,###', 'es_ES').format(pedidos[index]['detalles'][idx]['precioUnitario'])} | ${pedidos[index]['detalles'][idx]['cantidadProducto']} unidades',
+                                    ' Hora inicio: ${citas[index]['detalles'][idx]['horaInicio']}\n Hora fin: ${citas[index]['detalles'][idx]['horaFin']}\n Costo: \$ ${NumberFormat('#,###', 'es_ES').format(citas[index]['detalles'][idx]['costoServicio'])}',
                                   ),
                                 ]),
                               )
-
-                              // children: <Widget>[
-                              //   ListView.builder(
-                              //     shrinkWrap: true,
-                              //     itemCount: pedidos[index]['detalles'][idx]['producto'].length,
-                              //     itemBuilder: (BuildContext context, int productIdx) {
-                              //       return ListTile(
-                              //         title: Text(
-                              //           '${pedidos[index]['detalles'][idx]['producto'][productIdx]['nombreProducto']}',
-                              //         ),
-                              //         // Otros detalles del producto, si es necesario
-                              //       );
-                              //     },
-                              //   ),
-                              // ],
-                              );
+                            );
                         }),
                     Container(
                       decoration: const BoxDecoration(
@@ -197,17 +171,17 @@ class _PageCitasState extends State<PageCitas> {
                         buttonHeight: 52.0,
                         buttonMinWidth: 90.0,
                         children: [
-                          if (pedidos[index]['estado'] == 1)
-                            TextButton(
+                          if (citas[index]['estado'] == 1)
+                          TextButton(
                                 onPressed: () {
-                                  if (pedidos[index]['estado'] == 1) {
+                                  if (citas[index]['estado'] == 1) {
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
                                               title: const Text("Alerta!"),
                                               content: const Text(
-                                                  "¿Seguro quieres cancelar el pedido?"),
+                                                  "¿Seguro quieres cambiar el estado de la cita?"),
                                               actions: [
                                                 if (_isCanceling)
                                                   Padding(
@@ -239,7 +213,7 @@ class _PageCitasState extends State<PageCitas> {
                                                                   child:
                                                                       AlertDialog(
                                                                     title: const Text(
-                                                                        "Cancelando pedido"),
+                                                                        "Cambiando estado"),
                                                                     content: Padding(
                                                                         padding: const EdgeInsets
                                                                             .symmetric(
@@ -252,8 +226,8 @@ class _PageCitasState extends State<PageCitas> {
                                                               },
                                                             );
                                                             success = await cambiarEstado(
-                                                                pedidos[index][
-                                                                    'idPedido']);
+                                                                citas[index][
+                                                                    'idCita'], 2);
                                                             await Future
                                                                 .delayed(
                                                                     Duration(
@@ -268,7 +242,219 @@ class _PageCitasState extends State<PageCitas> {
                                                               Navigator.pushReplacement(
                                                                   context,
                                                                   MaterialPageRoute(
-                                                                      builder: (context) => PagePedido(
+                                                                      builder: (context) => PageCitas(
+                                                                          clienteId: widget
+                                                                              .clienteId,
+                                                                          clienteCorreo: widget
+                                                                              .clienteCorreo,
+                                                                          clienteContrasena: widget
+                                                                              .clienteContrasena,
+                                                                          clientOrUser:
+                                                                              widget.clientOrUser)));
+                                                            }
+                                                          },
+                                                    child:
+                                                        const Text("Aceptar")),
+                                                TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
+                                                    child:
+                                                        const Text("Cancelar"))
+                                              ]);
+                                        });
+                                  }
+                                },
+                                child: const Column(
+                                  children: [
+                                    Icon(
+                                      Icons.alarm,
+                                      color: Colors.black54,
+                                    ),
+                                    Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 2.0)),
+                                    Text("Cambiar a 'En proceso'",
+                                        style: TextStyle(color: Colors.black54))
+                                  ],
+                                )),
+                                if (citas[index]['estado'] == 2)
+                                TextButton(
+                                onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                              title: const Text("Alerta!"),
+                                              content: const Text(
+                                                  "¿Seguro quieres terminar la cita?"),
+                                              actions: [
+                                                if (_isCanceling)
+                                                  Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 5),
+                                                      child:
+                                                          CircularProgressIndicator()), // Icono de carga
+                                                TextButton(
+                                                    onPressed: _isCanceling
+                                                        ? null
+                                                        : () async {
+                                                            setState(() {
+                                                              _isCanceling =
+                                                                  true;
+                                                            });
+                                                            bool success =
+                                                                false;
+                                                            showDialog(
+                                                              context: context,
+                                                              barrierDismissible:
+                                                                  false, // Impide que el usuario cierre el diálogo tocando fuera de él
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return PopScope(
+                                                                  canPop:
+                                                                      false, // Impide que el usuario cierre el diálogo al presionar el botón de retroceso
+                                                                  child:
+                                                                      AlertDialog(
+                                                                    title: const Text(
+                                                                        "Cambiando estado"),
+                                                                    content: Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .symmetric(
+                                                                            horizontal:
+                                                                                100),
+                                                                        child:
+                                                                            CircularProgressIndicator()),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            );
+                                                            success = await cambiarEstado(
+                                                                citas[index][
+                                                                    'idCita'], 2);
+                                                            await Future
+                                                                .delayed(
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1));
+
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+
+                                                            if (success) {
+                                                              Navigator.pushReplacement(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) => PageCitas(
+                                                                          clienteId: widget
+                                                                              .clienteId,
+                                                                          clienteCorreo: widget
+                                                                              .clienteCorreo,
+                                                                          clienteContrasena: widget
+                                                                              .clienteContrasena,
+                                                                          clientOrUser:
+                                                                              widget.clientOrUser)));
+                                                            }
+                                                          },
+                                                    child:
+                                                        const Text("Aceptar")),
+                                                TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
+                                                    child:
+                                                        const Text("Cancelar"))
+                                              ]);
+                                        });
+                                },
+                                child: const Column(
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.black54,
+                                    ),
+                                    Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 2.0)),
+                                    Text("Terminar cita",
+                                        style: TextStyle(color: Colors.black54))
+                                  ],
+                                )),
+                            if(citas[index]['estado'] != 0 && citas[index]['estado'] != 3)
+                            TextButton(
+                                onPressed: () {
+                                  if (citas[index]['estado'] != 0) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                              title: const Text("Alerta!"),
+                                              content: const Text(
+                                                  "¿Seguro quieres cancelar la cita?"),
+                                              actions: [
+                                                if (_isCanceling)
+                                                  Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 5),
+                                                      child:
+                                                          CircularProgressIndicator()), // Icono de carga
+                                                TextButton(
+                                                    onPressed: _isCanceling
+                                                        ? null
+                                                        : () async {
+                                                            setState(() {
+                                                              _isCanceling =
+                                                                  true;
+                                                            });
+                                                            bool success =
+                                                                false;
+                                                            showDialog(
+                                                              context: context,
+                                                              barrierDismissible:
+                                                                  false, // Impide que el usuario cierre el diálogo tocando fuera de él
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return PopScope(
+                                                                  canPop:
+                                                                      false, // Impide que el usuario cierre el diálogo al presionar el botón de retroceso
+                                                                  child:
+                                                                      AlertDialog(
+                                                                    title: const Text(
+                                                                        "Cancelando cita"),
+                                                                    content: Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .symmetric(
+                                                                            horizontal:
+                                                                                100),
+                                                                        child:
+                                                                            CircularProgressIndicator()),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            );
+                                                            success = await cambiarEstado(
+                                                                citas[index][
+                                                                    'idCita'], 0);
+                                                            await Future
+                                                                .delayed(
+                                                                    Duration(
+                                                                        seconds:
+                                                                            1));
+
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+
+                                                            if (success) {
+                                                              Navigator.pushReplacement(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) => PageCitas(
                                                                           clienteId: widget
                                                                               .clienteId,
                                                                           clienteCorreo: widget
@@ -305,7 +491,7 @@ class _PageCitasState extends State<PageCitas> {
                                                   width: 5,
                                                 ),
                                                 Text(
-                                                  "El pedido ya esta cancelado",
+                                                  "La cita ya está cancelada",
                                                   style: TextStyle(
                                                       color: Color.fromARGB(
                                                           255, 255, 255, 255),
@@ -340,7 +526,7 @@ class _PageCitasState extends State<PageCitas> {
                                         style: TextStyle(color: Colors.black54))
                                   ],
                                 )),
-                          if (pedidos[index]['estado'] == 0)
+                          if (citas[index]['estado'] == 0)
                             const Column(
                               children: [
                                 Icon(
@@ -350,7 +536,21 @@ class _PageCitasState extends State<PageCitas> {
                                 Padding(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 2.0)),
-                                Text("Cancelado",
+                                Text("Cancelada",
+                                    style: TextStyle(color: Colors.black54))
+                              ],
+                            ),
+                            if (citas[index]['estado'] == 3)
+                            const Column(
+                              children: [
+                                Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.black54,
+                                ),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 2.0)),
+                                Text("Terminada",
                                     style: TextStyle(color: Colors.black54))
                               ],
                             )
@@ -364,83 +564,35 @@ class _PageCitasState extends State<PageCitas> {
           ))
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PageDetallePedido(
-                      clienteId: widget.clienteId,
-                      clienteCorreo: widget.clienteCorreo,
-                      clienteContrasena: widget.clienteContrasena,
-                      clientOrUser: widget.clientOrUser)));
-          setState(() {});
-          //_showModal(context);
-        },
-      ),
     );
   }
 
-  Future<bool> cambiarEstado(int id) async {
-    final String uriPedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos/id?id=$id';
+  Future<bool> cambiarEstado(int id, int estado) async {
+    final String uriCitas =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/citums/$id';
     final String usernameApi = '11173482';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
 
-    final getPedido = await http
-        .get(Uri.parse(uriPedidos), headers: {'authorization': basicAuth});
-    if (getPedido.statusCode == 200) {
-      Map<String, dynamic> pedido = jsonDecode(getPedido.body);
-      final String uriPutPedido =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos/$id';
-      final response = await http.put(Uri.parse(uriPutPedido),
+    final getCita = await http
+        .get(Uri.parse(uriCitas), headers: {'authorization': basicAuth});
+    if (getCita.statusCode == 200) {
+      Map<String, dynamic> cita = jsonDecode(getCita.body);
+      final String uriPutCita =
+          'http://dylanbolivar1-001-site1.ftempurl.com/api/citums/$id';
+      final response = await http.put(Uri.parse(uriPutCita),
           headers: {
             'authorization': basicAuth,
             "Content-Type": "application/json"
           },
           body: jsonEncode({
-            'idPedido': pedido['idPedido'],
-            'idCliente': pedido['idCliente'],
-            'fechaPedido': pedido['fechaPedido'],
-            'precioTotalPedido': pedido['precioTotalPedido'],
-            'estado': 0
+            'idCita': cita['idCita'],
+            'fechaRegistro': cita['fechaRegistro'],
+            'costoTotal': cita['costoTotal'],
+            'idCliente': cita['idCliente'],
+            'estado': estado
           }));
-      final String uriGetDetallePedido =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/detallePedidos';
-      final getDetallePedido = await http.get(Uri.parse(uriGetDetallePedido),
-          headers: {'authorization': basicAuth});
-      List<dynamic> detallePedido = jsonDecode(getDetallePedido.body);
-      for (var item in detallePedido) {
-        if (item['idPedido'] == id) {
-          final String uriProducto =
-              'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/id?id=${item['idProducto']}';
-          final getProducto = await http.get(Uri.parse(uriProducto),
-              headers: {'authorization': basicAuth});
-          Map<String, dynamic> productos = jsonDecode(getProducto.body);
-          final String uriPutProducto =
-              'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/${item['idProducto']}';
-          final response = await http.put(Uri.parse(uriPutProducto),
-              headers: {
-                'authorization': basicAuth,
-                "Content-Type": "application/json"
-              },
-              body: jsonEncode({
-                'idProducto': productos['idProducto'],
-                'nombreProducto': productos['nombreProducto'],
-                'descripcion': productos['descripcion'],
-                'fechaCaducidad': productos['fechaCaducidad'],
-                'precioVenta': productos['precioVenta'],
-                'saldoInventario':
-                    productos['saldoInventario'] + item['cantidadProducto'],
-                'estado': productos['estado']
-              }));
-          if (response.statusCode == 204) {}
-        }
-      }
-
       if (response.statusCode == 204) {
         return true;
       } else {}
@@ -448,15 +600,15 @@ class _PageCitasState extends State<PageCitas> {
     return false;
   }
 
-  Future<void> fetchPedidos() async {
-    final String uriPedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos';
+  Future<void> fetchCitas() async {
+    final String uriCitas =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/citums';
     final String usernameApi = '11173482';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
     final response = await http.get(
-      Uri.parse(uriPedidos),
+      Uri.parse(uriCitas),
       headers: <String, String>{
         'authorization': basicAuth,
         'Content-Type': 'application/json'
@@ -465,46 +617,70 @@ class _PageCitasState extends State<PageCitas> {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
-      List<Map<String, dynamic>> newPedidos = [];
+      List<Map<String, dynamic>> newCitas = [];
       for (var item in jsonData) {
-        if (item['idCliente'] == widget.clienteId && item['estado'] == 1) {
-          String fechaPedidoString = item['fechaPedido'];
-          DateTime fechaPedido = DateTime.parse(
-              fechaPedidoString); // Convertir la cadena en un objeto DateTime
-          // Formatear la fecha como "yyyy-mm-dd"
-          String fechaFormateada =
-              "${fechaPedido.year}-${fechaPedido.month.toString().padLeft(2, '0')}-${fechaPedido.day.toString().padLeft(2, '0')}";
-          newPedidos.add({
-            'idPedido': item['idPedido'],
-            'idCliente': item['idCliente'],
-            'fechaPedido': fechaFormateada,
-            'precioTotalPedido': item['precioTotalPedido'],
-            'estado': item['estado'],
-            'detalles': await fetchDetallesPedido(item['idPedido']),
-          });
-        }
+        var detalles = await fetchDetallesCita(item['idCita']);
+
+        var fechaCita = extractFechaCita(detalles);
+
+
+        newCitas.add({
+          'idCita': item['idCita'],
+          'idCliente': item['idCliente'],
+          'costoTotal': item['costoTotal'],
+          'fechaCita': fechaCita,
+          'estado': item['estado'],
+          'cliente': await fetchCliente(item['idCliente']),
+          'detalles': detalles,
+        });
       }
 
-      // Ordenar los pedidos por fecha de manera descendente
-      newPedidos.sort((a, b) => DateTime.parse(b['fechaPedido'])
-          .compareTo(DateTime.parse(a['fechaPedido'])));
+      
+      // Ordenar las citas por estado y luego por fecha ascendente
+      newCitas.sort((a, b) {
+        int estadoComparison = getEstadoPriority(a['estado']).compareTo(getEstadoPriority(b['estado']));
+        if (estadoComparison != 0) {
+          return estadoComparison;
+        }
+        // Comparar las fechas de manera ascendente si los estados tienen la misma prioridad
+        return (a['fechaCita']).compareTo(b['fechaCita']);
+      });
 
       setState(() {
-        pedidos = newPedidos;
+        citas = newCitas;
         _loaded = true;
       });
     } else {}
   }
 
-  Future<List<Map<String, dynamic>>> fetchDetallesPedido(int idPedido) async {
-    final String uriDetallesPedido =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallepedidos';
+  int getEstadoPriority(int estado) {
+    switch (estado) {
+      case 1:
+        return 0;
+      case 2:
+        return 1;
+      case 3:
+        return 2;
+      case 0:
+      default:
+        return 3;
+    }
+  }
+
+  DateTime extractFechaCita(List<dynamic> detalles) {
+    var fechaString = detalles[0]['fechaCita'];
+    return DateTime.parse(fechaString);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDetallesCita(int idCita) async {
+    final String uriDetallesCitas =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallecitums';
     final String usernameApi = '11173482';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
     final response = await http.get(
-      Uri.parse(uriDetallesPedido),
+      Uri.parse(uriDetallesCitas),
       headers: <String, String>{'authorization': basicAuth},
     );
 
@@ -512,13 +688,22 @@ class _PageCitasState extends State<PageCitas> {
       List<dynamic> jsonData = jsonDecode(response.body);
       List<Map<String, dynamic>> detalles = [];
       for (var item in jsonData) {
-        if (item['idPedido'] == idPedido) {
+        if (item['idCita'] == idCita) {
+          String fechaCitaString = item['fechaCita'];
+          DateTime fechaCita = DateTime.parse(fechaCitaString);
+          String fechaFormateada =
+              "${fechaCita.year}-${fechaCita.month.toString().padLeft(2, '0')}-${fechaCita.day.toString().padLeft(2, '0')}";
+
+
           detalles.add({
-            'idDetallePedido': item['idDetallePedido'],
-            'idProducto': item['idProducto'],
-            'cantidadProducto': item['cantidadProducto'],
-            'precioUnitario': item['precioUnitario'],
-            'producto': await fetchProducto(item['idProducto']),
+            'idDetalleCita': item['idDetalleCita'],
+            'idServicio': item['idServicio'],
+            'fechaCita': fechaFormateada,
+            'fechaOrden': item['fechaCita'],
+            'horaInicio': item['horaInicio'],
+            'horaFin': item['horaFin'],
+            'costoServicio': item['costoServicio'],
+            'servicio': await fetchServicio(item['idServicio']),
           });
         }
       }
@@ -528,33 +713,62 @@ class _PageCitasState extends State<PageCitas> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchProducto(int idProducto) async {
-    final String uriProductos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/productos';
+  Future<List<Map<String, dynamic>>> fetchServicio(int idServicio) async {
+    final String uriServicios =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/servicios';
     final String usernameApi = '11173482';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
     final response = await http.get(
-      Uri.parse(uriProductos),
+      Uri.parse(uriServicios),
       headers: <String, String>{'authorization': basicAuth},
     );
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
-      List<Map<String, dynamic>> producto = [];
+      List<Map<String, dynamic>> servicio = [];
       for (var item in jsonData) {
-        if (item['idProducto'] == idProducto) {
-          producto.add({
-            'nombreProducto': item['nombreProducto'],
+        if (item['idServicio'] == idServicio) {
+          servicio.add({
+            'nombreServicio': item['nombreServicio'],
           });
         }
       }
-      return producto;
+      return servicio;
     } else {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchCliente(int idCliente) async {
+    final String uriCliente =
+        'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$idCliente';
+    final String usernameApi = '11173482';
+    final String passwordApi = '60-dayfreetrial';
+    final String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
+    final response = await http.get(
+      Uri.parse(uriCliente),
+      headers: <String, String>{'authorization': basicAuth},
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+      List<Map<String, dynamic>> cliente = [];
+      cliente.add({
+        'cedula': jsonData['idCliente'].toString(),
+        'nombreCliente': jsonData['nombreCliente'],
+        'apellidoCliente': jsonData['apellidoCliente']
+      });
+
+      return cliente;
+    } else {
+      return [];
+    }
+  }
+
+  
 
   void _showExitoDialog(BuildContext context, String errorMessage) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
