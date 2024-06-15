@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:matissamovile/pages/Citas/pageCitas.dart';
 import 'package:matissamovile/pages/Login/login.dart';
 import 'package:matissamovile/pages/Pedidos/pagePedido.dart';
+import 'package:matissamovile/pages/Pedidos/pagePedidos.dart';
 import 'package:matissamovile/pages/Productos/pageProductos.dart';
 import 'package:matissamovile/pages/Ventas/pageVentas.dart';
 import 'package:matissamovile/pages/perfil/miperfil.dart';
@@ -165,6 +166,34 @@ class _MyDrawerState extends State<MyDrawer> {
                                     clientOrUser: widget.clientOrUser)));
                       },
                     ),
+                    if (widget.clientOrUser == 0)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.shopping_cart,
+                        size: 30,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        'Pedidos',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontFamily: GoogleFonts.quicksand().fontFamily,
+                        ),
+                      ),
+                      selected: _selectedIndex == 3,
+                      onTap: () {
+                        _onItemTapped(3);
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PagePedidos(
+                                    clienteId: widget.clienteId,
+                                    clienteCorreo: widget.clienteCorreo,
+                                    clienteContrasena: widget.clienteContrasena,
+                                    clientOrUser: widget.clientOrUser)));
+                      },
+                    ),
                   if (widget.clientOrUser == 0)
                     ListTile(
                       leading: const Icon(
@@ -180,9 +209,9 @@ class _MyDrawerState extends State<MyDrawer> {
                           fontFamily: GoogleFonts.quicksand().fontFamily,
                         ),
                       ),
-                      selected: _selectedIndex == 3,
+                      selected: _selectedIndex == 4,
                       onTap: () {
-                        _onItemTapped(3);
+                        _onItemTapped(4);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -199,7 +228,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     if (widget.clientOrUser == 0)
                     ListTile(
                       leading: const Icon(
-                        Icons.shopping_cart,
+                        Icons.shopping_bag_rounded,
                         size: 30,
                         color: Colors.black,
                       ),
@@ -211,9 +240,9 @@ class _MyDrawerState extends State<MyDrawer> {
                           fontFamily: GoogleFonts.quicksand().fontFamily,
                         ),
                       ),
-                      selected: _selectedIndex == 4,
+                      selected: _selectedIndex == 5,
                       onTap: () {
-                        _onItemTapped(4);
+                        _onItemTapped(5);
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
