@@ -569,8 +569,8 @@ class _PageCitaState extends State<PageCitas> {
 
   Future<bool> cambiarEstado(int id, int estado) async {
     final String uriCitas =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/citums/$id';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/citums/$id';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -580,7 +580,7 @@ class _PageCitaState extends State<PageCitas> {
     if (getCita.statusCode == 200) {
       Map<String, dynamic> cita = jsonDecode(getCita.body);
       final String uriPutCita =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/citums/$id';
+          'http://matissaapi-001-site1.dtempurl.com/api/citums/$id';
       final response = await http.put(Uri.parse(uriPutCita),
           headers: {
             'authorization': basicAuth,
@@ -602,8 +602,8 @@ class _PageCitaState extends State<PageCitas> {
 
   Future<void> fetchCitas() async {
     final String uriCitas =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/citums';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/citums';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -674,8 +674,8 @@ class _PageCitaState extends State<PageCitas> {
 
   Future<List<Map<String, dynamic>>> fetchDetallesCita(int idCita) async {
     final String uriDetallesCitas =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallecitums';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/detallecitums';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -715,8 +715,8 @@ class _PageCitaState extends State<PageCitas> {
 
   Future<List<Map<String, dynamic>>> fetchServicio(int idServicio) async {
     final String uriServicios =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/servicios';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/servicios';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -743,8 +743,8 @@ class _PageCitaState extends State<PageCitas> {
 
   Future<List<Map<String, dynamic>>> fetchCliente(int idCliente) async {
     final String uriCliente =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$idCliente';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/clientes/id?id=$idCliente';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));

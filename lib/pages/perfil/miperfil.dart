@@ -471,15 +471,15 @@ class _PerfilPageState extends State<PerfilPage> {
     int clienteId = widget.clienteId;
 
     final String url =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/clientes/id?id=$clienteId';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
 
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
 
     final response = await http.get(
-      //Uri.parse('http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId')
+      //Uri.parse('http://matissaapi-001-site1.dtempurl.com/api/clientes/id?id=$clienteId')
       Uri.parse(url),
       headers: <String, String>{'authorization': basicAuth},
     );
@@ -512,8 +512,8 @@ class _PerfilPageState extends State<PerfilPage> {
 
     int clienteId = widget.clienteId;
     String apiUri =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/id?id=$clienteId';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/clientes/id?id=$clienteId';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -532,7 +532,7 @@ class _PerfilPageState extends State<PerfilPage> {
         //   'contraseña': newPassword
         // };
         String apiUriPut =
-            'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes/$clienteId';
+            'http://matissaapi-001-site1.dtempurl.com/api/clientes/$clienteId';
         final putResponse = await http.put(
           Uri.parse(apiUriPut),
           headers: <String, String>{

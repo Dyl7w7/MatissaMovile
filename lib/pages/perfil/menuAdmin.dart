@@ -5,12 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:matissamovile/pages/widget/AppBar.dart';
 import 'package:matissamovile/pages/widget/drawer.dart';
 
-class MenuPage extends StatefulWidget {
+class MenuAdminPage extends StatefulWidget {
   final int clienteId;
   final String clienteCorreo;
   final String clienteContrasena;
   final int clientOrUser;
-  const MenuPage(
+  const MenuAdminPage(
       {Key? key,
       required this.clienteId,
       required this.clienteCorreo,
@@ -19,18 +19,17 @@ class MenuPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<MenuPage> createState() => _MenuPageState();
+  State<MenuAdminPage> createState() => _MenuAdminPageState();
 }
 
-class _MenuPageState extends State<MenuPage> {
-  String name = "";
-  String lastName = "";
+class _MenuAdminPageState extends State<MenuAdminPage> {
+  String username = "";
   bool _loaded = false;
 
   @override
   void initState() {
     super.initState();
-    fetchCliente();
+    fetchUsuario();
   }
 
   @override
@@ -69,7 +68,7 @@ class _MenuPageState extends State<MenuPage> {
                   padding: EdgeInsets.all(20),
                   child: Text(
                     textAlign: TextAlign.center,
-                    '$name $lastName, Le damos la bienvenida a la tienda de belleza virtual de Matissa',
+                    'Bienvenido $username, a la tienda de belleza virtual Matissa',
                     style: TextStyle(
                         fontFamily: GoogleFonts.quicksand().fontFamily,
                         fontSize: 16),
@@ -80,11 +79,11 @@ class _MenuPageState extends State<MenuPage> {
         ));
   }
 
-  Future<void> fetchCliente() async {
+  Future<void> fetchUsuario() async {
     int clienteId = widget.clienteId;
 
     final String url =
-        'http://matissaapi-001-site1.dtempurl.com/api/clientes/id?id=$clienteId';
+        'http://matissaapi-001-site1.dtempurl.com/api/usuarios/id?id=$clienteId';
     final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
 
@@ -98,10 +97,9 @@ class _MenuPageState extends State<MenuPage> {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> clienteData = jsonDecode(response.body);
+      Map<String, dynamic> userData = jsonDecode(response.body);
       setState(() {
-        name = clienteData['nombreCliente'] ?? '';
-        lastName = clienteData['apellidoCliente'] ?? '';
+        username = userData['nombreUsuario'] ?? '';
         _loaded = true;
       });
     }

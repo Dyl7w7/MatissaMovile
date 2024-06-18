@@ -87,8 +87,8 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
   bool _loaded = false;
   bool _stock = true;
   final String url =
-      'http://dylanbolivar1-001-site1.ftempurl.com/api/productos';
-  final String username = '11173482';
+      'http://matissaapi-001-site1.dtempurl.com/api/productos';
+  final String username = '11182245';
   final String password = '60-dayfreetrial';
   TextEditingController _controller = TextEditingController();
   late List<Product> productos = [];
@@ -181,7 +181,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
 
   Future<bool> cart() async {
     final String urlPedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos';
+        'http://matissaapi-001-site1.dtempurl.com/api/pedidos';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$username:$password'));
     bool success = false;
@@ -214,7 +214,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
     }
 
     final String urlDetallePedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallePedidos';
+        'http://matissaapi-001-site1.dtempurl.com/api/detallePedidos';
 
     int idPedido = await obtenerUltimoIdPedido();
 
@@ -236,7 +236,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
       );
       int idProducto = carrito2[i].idProducto;
       final String urlProductos =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/id?id=$idProducto';
+          'http://matissaapi-001-site1.dtempurl.com/api/productos/id?id=$idProducto';
       final getProductoApi = await http.get(
         Uri.parse(urlProductos),
         headers: <String, String>{'authorization': basicAuth},
@@ -245,7 +245,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
         Map<String, dynamic> getProducto = jsonDecode(getProductoApi.body);
         int putCantidad = getProducto['saldoInventario'] - carrito2[i].cantidad;
         final String urlProductosPut =
-            'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/$idProducto';
+            'http://matissaapi-001-site1.dtempurl.com/api/productos/$idProducto';
         final putProductoApi = await http.put(Uri.parse(urlProductosPut),
             headers: <String, String>{
               'authorization': basicAuth,
@@ -286,7 +286,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
 
   Future<int> obtenerUltimoIdPedido() async {
     final String urlPedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos';
+        'http://matissaapi-001-site1.dtempurl.com/api/pedidos';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$username:$password'));
     var pedidos = [];
@@ -314,7 +314,7 @@ class _PageDetallePedidoState extends State<PageDetallePedido> {
 
   Future<int> obtenerUltimoIdDetallePedido() async {
     final String urlDetallePedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallepedidos';
+        'http://matissaapi-001-site1.dtempurl.com/api/detallepedidos';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$username:$password'));
     var detallepedidos = [];

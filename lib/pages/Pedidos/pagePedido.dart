@@ -372,8 +372,8 @@ class _PagePedidoState extends State<PagePedido> {
 
   Future<bool> cambiarEstado(int id) async {
     final String uriPedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos/id?id=$id';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/pedidos/id?id=$id';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -383,7 +383,7 @@ class _PagePedidoState extends State<PagePedido> {
     if (getPedido.statusCode == 200) {
       Map<String, dynamic> pedido = jsonDecode(getPedido.body);
       final String uriPutPedido =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos/$id';
+          'http://matissaapi-001-site1.dtempurl.com/api/pedidos/$id';
       final response = await http.put(Uri.parse(uriPutPedido),
           headers: {
             'authorization': basicAuth,
@@ -397,19 +397,19 @@ class _PagePedidoState extends State<PagePedido> {
             'estado': 0
           }));
       final String uriGetDetallePedido =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/detallePedidos';
+          'http://matissaapi-001-site1.dtempurl.com/api/detallePedidos';
       final getDetallePedido = await http.get(Uri.parse(uriGetDetallePedido),
           headers: {'authorization': basicAuth});
       List<dynamic> detallePedido = jsonDecode(getDetallePedido.body);
       for (var item in detallePedido) {
         if (item['idPedido'] == id) {
           final String uriProducto =
-              'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/id?id=${item['idProducto']}';
+              'http://matissaapi-001-site1.dtempurl.com/api/productos/id?id=${item['idProducto']}';
           final getProducto = await http.get(Uri.parse(uriProducto),
               headers: {'authorization': basicAuth});
           Map<String, dynamic> productos = jsonDecode(getProducto.body);
           final String uriPutProducto =
-              'http://dylanbolivar1-001-site1.ftempurl.com/api/productos/${item['idProducto']}';
+              'http://matissaapi-001-site1.dtempurl.com/api/productos/${item['idProducto']}';
           final response = await http.put(Uri.parse(uriPutProducto),
               headers: {
                 'authorization': basicAuth,
@@ -438,8 +438,8 @@ class _PagePedidoState extends State<PagePedido> {
 
   Future<void> fetchPedidos() async {
     final String uriPedidos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/pedidos';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/pedidos';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -486,8 +486,8 @@ class _PagePedidoState extends State<PagePedido> {
 
   Future<List<Map<String, dynamic>>> fetchDetallesPedido(int idPedido) async {
     final String uriDetallesPedido =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/detallepedidos';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/detallepedidos';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));
@@ -518,8 +518,8 @@ class _PagePedidoState extends State<PagePedido> {
 
   Future<List<Map<String, dynamic>>> fetchProducto(int idProducto) async {
     final String uriProductos =
-        'http://dylanbolivar1-001-site1.ftempurl.com/api/productos';
-    final String usernameApi = '11173482';
+        'http://matissaapi-001-site1.dtempurl.com/api/productos';
+    final String usernameApi = '11182245';
     final String passwordApi = '60-dayfreetrial';
     final String basicAuth =
         'Basic ' + base64Encode(utf8.encode('$usernameApi:$passwordApi'));

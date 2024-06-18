@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:matissamovile/pages/Register/register.dart';
 import 'package:matissamovile/pages/perfil/menu.dart';
+import 'package:matissamovile/pages/perfil/menuAdmin.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
@@ -50,11 +51,11 @@ class _MyLoginState extends State<MyLogin> {
       _showErrorDialog(context, 'Por favor, rellene los campos');
     } else {
       final String urlCliente =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/clientes';
+          'http://matissaapi-001-site1.dtempurl.com/api/clientes';
       final String urlUser =
-          'http://dylanbolivar1-001-site1.ftempurl.com/api/usuarios';
+          'http://matissaapi-001-site1.dtempurl.com/api/usuarios';
 
-      final String usernameApi = '11173482';
+      final String usernameApi = '11182245';
       final String passwordApi = '60-dayfreetrial';
 
       final String basicAuth =
@@ -98,7 +99,7 @@ class _MyLoginState extends State<MyLogin> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => MenuPage(
+                    builder: (context) => MenuAdminPage(
                           clienteId: idCliente,
                           clienteCorreo: "$storedCorreo",
                           clienteContrasena: "$storedPassword",
